@@ -1,0 +1,9 @@
+1) elegir un estilo en https://tweakcn.com/editor/theme
+2) copiar el css en un file index.css
+3) conversar con la ia sobre el proyecto y darle contexto
+4) pedirle que actue como un experto de ui y que cree un desing system con el estilo creado en index.css
+ - prompt: i want you to generate a comprehensive “style guide” and save it as a markdown file with the style on
+  @index.css file and then you can generate a html file with the desing system implemented? can you do this
+  quitely and slowly acting like an UI/UX development expert. remember to close on the @index.css styles becuase
+  this is our identity
+5) iterar hasta obtener resultado esperado

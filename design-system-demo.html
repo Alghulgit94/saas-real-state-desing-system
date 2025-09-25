@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate SaaS Design System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* Typography Classes */
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; font-weight: 700; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; font-weight: 600; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; font-weight: 600; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+
+        .font-sans { font-family: var(--font-sans); }
+        .font-serif { font-family: var(--font-serif); }
+        .font-mono { font-family: var(--font-mono); }
+
+        .text-muted { color: var(--muted-foreground); }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-between { justify-content: space-between; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .flex-wrap { flex-wrap: wrap; }
+
+        /* Spacing */
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+
+        /* Icon Component */
+        .icon {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .icon--sm { width: 0.875rem; height: 0.875rem; }
+        .icon--md { width: 1rem; height: 1rem; }
+        .icon--lg { width: 1.25rem; height: 1.25rem; }
+        .icon--xl { width: 1.5rem; height: 1.5rem; }
+
+        /* Button Component */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            padding: 0.5rem 1rem;
+            min-height: 2.5rem;
+        }
+
+        .btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--ring);
+        }
+
+        .btn--primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        .btn--primary:hover {
+            background-color: var(--primary);
+            opacity: 0.9;
+        }
+
+        .btn--secondary {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn--secondary:hover {
+            background-color: var(--secondary);
+            opacity: 0.8;
+        }
+
+        .btn--outline {
+            border: 1px solid var(--border);
+            background-color: transparent;
+            color: var(--foreground);
+        }
+
+        .btn--outline:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn--ghost {
+            background-color: transparent;
+            color: var(--foreground);
+        }
+
+        .btn--ghost:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn--destructive {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+        }
+
+        .btn--destructive:hover {
+            background-color: var(--destructive);
+            opacity: 0.9;
+        }
+
+        .btn--sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            min-height: 2rem;
+        }
+
+        .btn--lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            min-height: 3rem;
+        }
+
+        /* Card Component */
+        .card {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .card__header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card__title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .card__description {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        .card__content {
+            padding: 1.5rem;
+        }
+
+        .card__footer {
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Input Component */
+        .input {
+            flex: 1;
+            border: 1px solid var(--input);
+            background-color: transparent;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            color: var(--foreground);
+            transition: all 0.15s ease;
+        }
+
+        .input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--ring);
+            border-color: var(--ring);
+        }
+
+        .input::placeholder {
+            color: var(--muted-foreground);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        /* Custom Select Component */
+        .select {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .select__trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--input);
+            border-radius: var(--radius);
+            background-color: transparent;
+            color: var(--foreground);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .select__trigger:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--ring);
+            border-color: var(--ring);
+        }
+
+        .select__trigger:hover {
+            border-color: var(--ring);
+        }
+
+        .select__placeholder {
+            color: var(--muted-foreground);
+        }
+
+        .select__value {
+            color: var(--foreground);
+        }
+
+        .select__icon {
+            width: 1rem;
+            height: 1rem;
+            transition: transform 0.15s ease;
+            color: var(--muted-foreground);
+        }
+
+        .select.open .select__icon {
+            transform: rotate(180deg);
+        }
+
+        .select__options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            margin-top: 0.25rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background-color: var(--popover);
+            color: var(--popover-foreground);
+            box-shadow: var(--shadow-lg);
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .select.open .select__options {
+            display: block;
+        }
+
+        .select__option {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .select__option:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .select__option.selected {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        .select__option:first-child {
+            border-top-left-radius: var(--radius-md);
+            border-top-right-radius: var(--radius-md);
+        }
+
+        .select__option:last-child {
+            border-bottom-left-radius: var(--radius-md);
+            border-bottom-right-radius: var(--radius-md);
+        }
+
+        /* Badge Component */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: var(--radius-sm);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .badge--primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        .badge--secondary {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .badge--outline {
+            border: 1px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .badge--destructive {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+        }
+
+        /* Avatar Component */
+        .avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: var(--muted);
+            color: var(--muted-foreground);
+        }
+
+        .avatar--sm { width: 2rem; height: 2rem; font-size: 0.75rem; }
+        .avatar--md { width: 2.5rem; height: 2.5rem; font-size: 0.875rem; }
+        .avatar--lg { width: 3rem; height: 3rem; font-size: 1rem; }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Dropdown Component */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown__trigger {
+            cursor: pointer;
+        }
+
+        .dropdown__content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 50;
+            min-width: 12rem;
+            overflow: hidden;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background-color: var(--popover);
+            color: var(--popover-foreground);
+            box-shadow: var(--shadow-lg);
+            display: none;
+            margin-top: 0.25rem;
+        }
+
+        .dropdown__content.show {
+            display: block;
+        }
+
+        .dropdown__item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            text-decoration: none;
+            color: var(--popover-foreground);
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: all 0.15s ease;
+        }
+
+        .dropdown__item:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        /* Property Card - Real Estate Specific */
+        .property-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .property-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .property-card__image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, var(--muted), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        .property-card__content {
+            padding: 1rem;
+        }
+
+        .property-card__price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .property-card__title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-card__location {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .property-card__features {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-bar__input {
+            border: none;
+            background: transparent;
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--foreground);
+        }
+
+        .search-bar__input:focus {
+            outline: none;
+        }
+
+        .search-bar__button {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+
+        .search-bar__button:hover {
+            opacity: 0.9;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: var(--sidebar);
+            color: var(--sidebar-foreground);
+            border-right: 1px solid var(--sidebar-border);
+            min-height: 100vh;
+            width: 250px;
+            padding: 1rem;
+        }
+
+        .sidebar__nav {
+            list-style: none;
+        }
+
+        .sidebar__nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar__nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            color: var(--sidebar-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s ease;
+        }
+
+        .sidebar__nav-link:hover {
+            background-color: var(--sidebar-accent);
+            color: var(--sidebar-accent-foreground);
+        }
+
+        .sidebar__nav-link.active {
+            background-color: var(--sidebar-primary);
+            color: var(--sidebar-primary-foreground);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
+
+        /* Demo Sections */
+        .demo-section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .demo-section:last-child {
+            border-bottom: none;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .color-swatch__preview {
+            width: 3rem;
+            height: 3rem;
+            border-radius: var(--radius-sm);
+            margin-right: 1rem;
+        }
+
+        .color-swatch__info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .color-swatch__info p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            font-family: var(--font-mono);
+        }
+
+        /* Component showcase grids */
+        .component-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .component-grid--buttons {
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+
+        .component-grid--cards {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .component-grid--properties {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button class="btn btn--outline btn--sm" onclick="toggleTheme()">
+            <i id="theme-icon" data-lucide="moon" class="icon icon--sm"></i>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="py-4 mb-8">
+            <h1 class="text-4xl font-serif mb-2">Real Estate SaaS Design System</h1>
+            <p class="text-lg text-muted">A comprehensive design system for modern real estate platforms</p>
+        </header>
+
+        <!-- Colors Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Color Palette</h2>
+            
+            <!-- Primary Theme Colors -->
+            <h3 class="text-xl mb-4">Primary Theme Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #f0f8ff;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Background</h4>
+                        <p>#f0f8ff</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #374151;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Foreground</h4>
+                        <p>#374151</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #22c55e;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Primary</h4>
+                        <p>#22c55e</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #ffffff; border: 1px solid #e5e7eb;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Primary Foreground</h4>
+                        <p>#ffffff</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary & Accent Colors -->
+            <h3 class="text-xl mb-4 mt-8">Secondary & Accent Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #e0f2fe;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Secondary</h4>
+                        <p>#e0f2fe</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #4b5563;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Secondary Foreground</h4>
+                        <p>#4b5563</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #d1fae5;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Accent</h4>
+                        <p>#d1fae5</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #374151;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Accent Foreground</h4>
+                        <p>#374151</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UI Component Colors -->
+            <h3 class="text-xl mb-4 mt-8">UI Component Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #ffffff; border: 1px solid #e5e7eb;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Card</h4>
+                        <p>#ffffff</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #f3f4f6;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Muted</h4>
+                        <p>#f3f4f6</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #6b7280;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Muted Foreground</h4>
+                        <p>#6b7280</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #e5e7eb;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Border</h4>
+                        <p>#e5e7eb</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status & Chart Colors -->
+            <h3 class="text-xl mb-4 mt-8">Status & Chart Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #ef4444;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Destructive</h4>
+                        <p>#ef4444</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #22c55e;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 1</h4>
+                        <p>#22c55e</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #10b981;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 2</h4>
+                        <p>#10b981</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #059669;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 3</h4>
+                        <p>#059669</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #047857;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 4</h4>
+                        <p>#047857</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #065f46;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 5</h4>
+                        <p>#065f46</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Mode Colors -->
+            <h2 class="text-2xl mb-6 mt-12">Dark Mode Color Palette</h2>
+            
+            <!-- Dark Primary Theme Colors -->
+            <h3 class="text-xl mb-4">Dark Primary Theme Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #0f172a;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Background</h4>
+                        <p>#0f172a</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #d1d5db;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Foreground</h4>
+                        <p>#d1d5db</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #34d399;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Primary</h4>
+                        <p>#34d399</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #0f172a;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Primary Foreground</h4>
+                        <p>#0f172a</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Secondary & Accent Colors -->
+            <h3 class="text-xl mb-4 mt-8">Dark Secondary & Accent Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #2d3748;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Secondary</h4>
+                        <p>#2d3748</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #a1a1aa;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Secondary Foreground</h4>
+                        <p>#a1a1aa</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #374151;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Accent</h4>
+                        <p>#374151</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #a1a1aa;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Accent Foreground</h4>
+                        <p>#a1a1aa</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark UI Component Colors -->
+            <h3 class="text-xl mb-4 mt-8">Dark UI Component Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #1e293b;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Card</h4>
+                        <p>#1e293b</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #1e293b;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Muted</h4>
+                        <p>#1e293b</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #6b7280;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Muted Foreground</h4>
+                        <p>#6b7280</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #4b5563;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Border</h4>
+                        <p>#4b5563</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Status & Chart Colors -->
+            <h3 class="text-xl mb-4 mt-8">Dark Status & Chart Colors</h3>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #ef4444;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Destructive</h4>
+                        <p>#ef4444</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #34d399;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 1</h4>
+                        <p>#34d399</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #2dd4bf;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 2</h4>
+                        <p>#2dd4bf</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #22c55e;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 3</h4>
+                        <p>#22c55e</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #10b981;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 4</h4>
+                        <p>#10b981</p>
+                    </div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-swatch__preview" style="background-color: #059669;"></div>
+                    <div class="color-swatch__info">
+                        <h4>Chart 5</h4>
+                        <p>#059669</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typography Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Typography</h2>
+            <div class="mb-6">
+                <h1 class="text-4xl font-serif mb-2">Heading 1 (Lora Serif)</h1>
+                <h2 class="text-3xl mb-2">Heading 2 (DM Sans)</h2>
+                <h3 class="text-2xl mb-2">Heading 3 (DM Sans)</h3>
+                <h4 class="text-xl mb-2">Heading 4 (DM Sans)</h4>
+                <p class="text-base mb-2">Body text using DM Sans - professional and readable</p>
+                <p class="text-sm text-muted mb-2">Secondary text in muted color</p>
+                <p class="text-xs font-mono">Monospace text using IBM Plex Mono</p>
+            </div>
+        </section>
+
+        <!-- Buttons Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Buttons</h2>
+            <div class="component-grid component-grid--buttons">
+                <button class="btn btn--primary">
+                    <i data-lucide="plus" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Primary
+                </button>
+                <button class="btn btn--secondary">
+                    <i data-lucide="file-text" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Secondary
+                </button>
+                <button class="btn btn--outline">
+                    <i data-lucide="download" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Outline
+                </button>
+                <button class="btn btn--ghost">
+                    <i data-lucide="eye" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Ghost
+                </button>
+                <button class="btn btn--destructive">
+                    <i data-lucide="trash-2" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Destructive
+                </button>
+            </div>
+            <div class="component-grid component-grid--buttons">
+                <button class="btn btn--primary btn--sm">Small</button>
+                <button class="btn btn--primary">Default</button>
+                <button class="btn btn--primary btn--lg">Large</button>
+            </div>
+        </section>
+
+        <!-- Form Elements Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Form Elements</h2>
+            <div class="grid grid-2 gap-6">
+                <div class="input-group">
+                    <label class="label">Email Address</label>
+                    <div style="position: relative;">
+                        <i data-lucide="mail" class="icon icon--sm" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground);"></i>
+                        <input type="email" class="input" placeholder="Enter your email" style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="label">Property Type</label>
+                    <div class="select" data-component="select">
+                        <div class="select__trigger">
+                            <span class="select__placeholder">Select property type</span>
+                            <i data-lucide="chevron-down" class="select__icon icon"></i>
+                        </div>
+                        <div class="select__options">
+                            <div class="select__option" data-value="house">House</div>
+                            <div class="select__option" data-value="apartment">Apartment</div>
+                            <div class="select__option" data-value="condo">Condo</div>
+                            <div class="select__option" data-value="townhouse">Townhouse</div>
+                            <div class="select__option" data-value="commercial">Commercial</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="label">Price Range</label>
+                    <div style="position: relative;">
+                        <i data-lucide="dollar-sign" class="icon icon--sm" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground);"></i>
+                        <input type="text" class="input" placeholder="e.g., $300,000 - $500,000" style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="label">Search Location</label>
+                    <div style="position: relative;">
+                        <i data-lucide="map-pin" class="icon icon--sm" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground);"></i>
+                        <input type="text" class="input" placeholder="City, State or ZIP" style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Cards</h2>
+            <div class="component-grid component-grid--cards">
+                <div class="card">
+                    <div class="card__header">
+                        <div class="card__title">
+                            <i data-lucide="bar-chart" class="icon icon--sm" style="margin-right: 0.5rem; vertical-align: middle;"></i>
+                            Property Statistics
+                        </div>
+                        <div class="card__description">Monthly overview of property metrics</div>
+                    </div>
+                    <div class="card__content">
+                        <p><i data-lucide="home" class="icon icon--sm" style="margin-right: 0.5rem; color: var(--primary);"></i>Total Properties: <strong>1,247</strong></p>
+                        <p><i data-lucide="trending-up" class="icon icon--sm" style="margin-right: 0.5rem; color: var(--primary);"></i>Active Listings: <strong>847</strong></p>
+                        <p><i data-lucide="check-circle" class="icon icon--sm" style="margin-right: 0.5rem; color: var(--primary);"></i>Sold This Month: <strong>23</strong></p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card__header">
+                        <div class="card__title">
+                            <i data-lucide="activity" class="icon icon--sm" style="margin-right: 0.5rem; vertical-align: middle;"></i>
+                            Recent Activity
+                        </div>
+                    </div>
+                    <div class="card__content">
+                        <p class="text-sm text-muted mb-2">
+                            <i data-lucide="plus-circle" class="icon icon--sm" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                            New property added: 123 Oak Street
+                        </p>
+                        <p class="text-sm text-muted mb-2">
+                            <i data-lucide="check-circle" class="icon icon--sm" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                            Property sold: 456 Maple Ave
+                        </p>
+                        <p class="text-sm text-muted">
+                            <i data-lucide="edit" class="icon icon--sm" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                            Price updated: 789 Pine Road
+                        </p>
+                    </div>
+                    <div class="card__footer">
+                        <button class="btn btn--outline btn--sm">
+                            <i data-lucide="arrow-right" class="icon icon--sm" style="margin-left: 0.5rem;"></i>
+                            View All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Badges Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Badges</h2>
+            <div class="flex gap-4 items-center flex-wrap">
+                <span class="badge badge--primary">
+                    <i data-lucide="tag" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                    For Sale
+                </span>
+                <span class="badge badge--secondary">
+                    <i data-lucide="clock" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                    Pending
+                </span>
+                <span class="badge badge--outline">
+                    <i data-lucide="check" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                    Sold
+                </span>
+                <span class="badge badge--destructive">
+                    <i data-lucide="x" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                    Off Market
+                </span>
+            </div>
+        </section>
+
+        <!-- Avatars Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Avatars</h2>
+            <div class="flex gap-4 items-center">
+                <div class="avatar avatar--sm">JS</div>
+                <div class="avatar avatar--md">AM</div>
+                <div class="avatar avatar--lg">RC</div>
+            </div>
+        </section>
+
+        <!-- Search Bar Section -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Search Components</h2>
+            <div class="search-bar">
+                <i data-lucide="search" class="icon icon--sm" style="margin-left: 0.5rem; color: var(--muted-foreground);"></i>
+                <input type="text" class="search-bar__input" placeholder="Search properties by location, price, or features...">
+                <button class="search-bar__button">
+                    <i data-lucide="search" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Search
+                </button>
+            </div>
+        </section>
+
+        <!-- Real Estate Specific Components -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Property Listings</h2>
+            <div class="component-grid component-grid--properties">
+                <div class="property-card">
+                    <div class="property-card__image">
+                        <i data-lucide="camera" class="icon icon--xl" style="color: var(--muted-foreground);"></i>
+                    </div>
+                    <div class="property-card__content">
+                        <div class="property-card__price">$450,000</div>
+                        <div class="property-card__title">Beautiful Family Home</div>
+                        <div class="property-card__location">
+                            <i data-lucide="map-pin" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                            123 Oak Street, Downtown
+                        </div>
+                        <div class="property-card__features">
+                            <span><i data-lucide="bed" class="icon icon--sm" style="margin-right: 0.25rem;"></i>3 beds</span>
+                            <span><i data-lucide="bath" class="icon icon--sm" style="margin-right: 0.25rem;"></i>2 baths</span>
+                            <span><i data-lucide="square" class="icon icon--sm" style="margin-right: 0.25rem;"></i>1,800 sq ft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="property-card">
+                    <div class="property-card__image">
+                        <i data-lucide="camera" class="icon icon--xl" style="color: var(--muted-foreground);"></i>
+                    </div>
+                    <div class="property-card__content">
+                        <div class="property-card__price">$325,000</div>
+                        <div class="property-card__title">Modern Condo</div>
+                        <div class="property-card__location">
+                            <i data-lucide="map-pin" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                            456 Maple Avenue, Midtown
+                        </div>
+                        <div class="property-card__features">
+                            <span><i data-lucide="bed" class="icon icon--sm" style="margin-right: 0.25rem;"></i>2 beds</span>
+                            <span><i data-lucide="bath" class="icon icon--sm" style="margin-right: 0.25rem;"></i>2 baths</span>
+                            <span><i data-lucide="square" class="icon icon--sm" style="margin-right: 0.25rem;"></i>1,200 sq ft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="property-card">
+                    <div class="property-card__image">
+                        <i data-lucide="camera" class="icon icon--xl" style="color: var(--muted-foreground);"></i>
+                    </div>
+                    <div class="property-card__content">
+                        <div class="property-card__price">$675,000</div>
+                        <div class="property-card__title">Luxury Townhouse</div>
+                        <div class="property-card__location">
+                            <i data-lucide="map-pin" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                            789 Pine Road, Uptown
+                        </div>
+                        <div class="property-card__features">
+                            <span><i data-lucide="bed" class="icon icon--sm" style="margin-right: 0.25rem;"></i>4 beds</span>
+                            <span><i data-lucide="bath" class="icon icon--sm" style="margin-right: 0.25rem;"></i>3 baths</span>
+                            <span><i data-lucide="square" class="icon icon--sm" style="margin-right: 0.25rem;"></i>2,400 sq ft</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Components -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Interactive Components</h2>
+            <div class="flex gap-4 items-start flex-wrap">
+                <div class="dropdown" data-component="dropdown">
+                    <button class="btn btn--outline dropdown__trigger">
+                        <i data-lucide="more-horizontal" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                        Property Actions
+                        <i data-lucide="chevron-down" class="icon icon--sm" style="margin-left: 0.5rem;"></i>
+                    </button>
+                    <div class="dropdown__content">
+                        <button class="dropdown__item">
+                            <i data-lucide="edit" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                            Edit Property
+                        </button>
+                        <button class="dropdown__item">
+                            <i data-lucide="eye" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                            View Details
+                        </button>
+                        <button class="dropdown__item">
+                            <i data-lucide="check-circle" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                            Mark as Sold
+                        </button>
+                        <hr style="border: none; border-top: 1px solid var(--border); margin: 0.25rem 0;">
+                        <button class="dropdown__item" style="color: var(--destructive);">
+                            <i data-lucide="trash-2" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                            Delete Property
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Icon Showcase -->
+                <div class="card" style="padding: 1rem; min-width: 350px;">
+                    <h3 class="text-lg mb-4">
+                        <i data-lucide="palette" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                        Icon System (Lucide Icons)
+                    </h3>
+                    <div class="grid grid-4 gap-4">
+                        <div style="text-align: center;">
+                            <i data-lucide="home" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">home</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i data-lucide="map-pin" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">map-pin</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i data-lucide="dollar-sign" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">dollar-sign</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i data-lucide="users" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">users</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i data-lucide="building" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">building</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i data-lucide="calendar" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">calendar</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i data-lucide="bar-chart" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">bar-chart</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i data-lucide="settings" class="icon icon--lg" style="margin-bottom: 0.5rem;"></i>
+                            <div class="text-xs text-muted">settings</div>
+                        </div>
+                    </div>
+                    <div class="mb-4 mt-4">
+                        <h4 class="text-sm mb-2">Real Estate Specific Icons:</h4>
+                        <div class="flex gap-4 flex-wrap">
+                            <span class="text-xs text-muted flex items-center"><i data-lucide="key" class="icon icon--sm" style="margin-right: 0.25rem;"></i>key</span>
+                            <span class="text-xs text-muted flex items-center"><i data-lucide="bed" class="icon icon--sm" style="margin-right: 0.25rem;"></i>bed</span>
+                            <span class="text-xs text-muted flex items-center"><i data-lucide="bath" class="icon icon--sm" style="margin-right: 0.25rem;"></i>bath</span>
+                            <span class="text-xs text-muted flex items-center"><i data-lucide="car" class="icon icon--sm" style="margin-right: 0.25rem;"></i>car</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sidebar Demo -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Navigation Sidebar</h2>
+            <div style="height: 300px; display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+                <nav class="sidebar" style="min-height: auto; width: 200px;">
+                    <ul class="sidebar__nav">
+                        <li class="sidebar__nav-item">
+                            <a href="#" class="sidebar__nav-link active">
+                                <i data-lucide="layout-dashboard" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="sidebar__nav-item">
+                            <a href="#" class="sidebar__nav-link">
+                                <i data-lucide="home" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                                Properties
+                            </a>
+                        </li>
+                        <li class="sidebar__nav-item">
+                            <a href="#" class="sidebar__nav-link">
+                                <i data-lucide="users" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                                Clients
+                            </a>
+                        </li>
+                        <li class="sidebar__nav-item">
+                            <a href="#" class="sidebar__nav-link">
+                                <i data-lucide="bar-chart" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                                Analytics
+                            </a>
+                        </li>
+                        <li class="sidebar__nav-item">
+                            <a href="#" class="sidebar__nav-link">
+                                <i data-lucide="settings" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                                Settings
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div style="flex: 1; padding: 1rem; background-color: var(--background);">
+                    <h3 class="text-xl mb-2">Main Content Area</h3>
+                    <p class="text-muted">This would be your main application content with enhanced 1.0rem border radius throughout.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.setAttribute('data-lucide', 'moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                themeIcon.setAttribute('data-lucide', 'sun');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            // Re-initialize Lucide icons after changing the icon
+            lucide.createIcons();
+        }
+
+        // Custom Select Component
+        class CustomSelect {
+            constructor(element) {
+                this.element = element;
+                this.trigger = element.querySelector('.select__trigger');
+                this.options = element.querySelector('.select__options');
+                this.placeholder = element.querySelector('.select__placeholder');
+                this.icon = element.querySelector('.select__icon');
+                this.optionElements = element.querySelectorAll('.select__option');
+                this.isOpen = false;
+                this.selectedValue = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggle();
+                });
+                
+                this.optionElements.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.selectOption(option);
+                    });
+                });
+                
+                // Close on outside click
+                document.addEventListener('click', () => {
+                    this.close();
+                });
+                
+                // Prevent closing when clicking inside
+                this.options.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+                
+                // Keyboard support
+                this.trigger.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.toggle();
+                    } else if (e.key === 'Escape') {
+                        this.close();
+                    }
+                });
+            }
+            
+            toggle() {
+                this.isOpen ? this.close() : this.open();
+            }
+            
+            open() {
+                this.element.classList.add('open');
+                this.isOpen = true;
+                this.trigger.setAttribute('aria-expanded', 'true');
+            }
+            
+            close() {
+                this.element.classList.remove('open');
+                this.isOpen = false;
+                this.trigger.setAttribute('aria-expanded', 'false');
+            }
+            
+            selectOption(option) {
+                // Remove previous selection
+                this.optionElements.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selection to clicked option
+                option.classList.add('selected');
+                
+                // Update display
+                this.selectedValue = option.dataset.value;
+                this.placeholder.textContent = option.textContent;
+                this.placeholder.classList.remove('select__placeholder');
+                this.placeholder.classList.add('select__value');
+                
+                // Close dropdown
+                this.close();
+                
+                // Emit custom event
+                this.element.dispatchEvent(new CustomEvent('change', {
+                    detail: { value: this.selectedValue, text: option.textContent }
+                }));
+            }
+        }
+
+        // Dropdown functionality
+        class Dropdown {
+            constructor(element) {
+                this.element = element;
+                this.trigger = element.querySelector('.dropdown__trigger');
+                this.content = element.querySelector('.dropdown__content');
+                this.isOpen = false;
+                
+                this.init();
+            }
+            
+            init() {
+                this.trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggle();
+                });
+                
+                // Close on outside click
+                document.addEventListener('click', () => {
+                    this.close();
+                });
+                
+                // Prevent closing when clicking inside dropdown
+                this.content.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+            
+            toggle() {
+                this.isOpen ? this.close() : this.open();
+            }
+            
+            open() {
+                this.content.classList.add('show');
+                this.isOpen = true;
+            }
+            
+            close() {
+                this.content.classList.remove('show');
+                this.isOpen = false;
+            }
+        }
+
+        // Auto-initialize components
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeIcon.setAttribute('data-lucide', 'sun');
+            }
+            
+            // Initialize custom selects
+            document.querySelectorAll('[data-component="select"]').forEach(element => {
+                new CustomSelect(element);
+            });
+            
+            // Initialize dropdowns
+            document.querySelectorAll('[data-component="dropdown"]').forEach(element => {
+                new Dropdown(element);
+            });
+            
+            // Initialize Lucide icons
+            lucide.createIcons();
+            
+            // Add change listener to custom selects for demo
+            document.querySelectorAll('[data-component="select"]').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    console.log('Selected:', e.detail);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
