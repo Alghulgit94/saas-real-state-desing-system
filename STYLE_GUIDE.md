@@ -552,6 +552,701 @@ Contextual animations for property and client management:
 - Don't use overly bouncy effects in professional contexts
 - Don't forget to provide non-animated alternatives for critical feedback
 
+## Real Estate Specific Patterns
+
+Specialized components and layouts designed specifically for real estate SaaS platforms, addressing unique user needs and industry workflows.
+
+### Advanced Property Card Variations
+
+Comprehensive property card system with multiple layouts and data presentations:
+
+#### Property Card - Compact Layout
+```css
+.property-card--compact {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.property-card--compact .property-card__image {
+  width: 4rem;
+  height: 4rem;
+  min-width: 4rem;
+  border-radius: var(--radius);
+  background: var(--muted);
+}
+
+.property-card--compact .property-card__content {
+  flex: 1;
+  min-width: 0; /* Prevent flex item from overflowing */
+}
+
+.property-card--compact .property-card__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.property-card--compact .property-card__price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+```
+
+#### Property Card - Featured Layout
+```css
+.property-card--featured {
+  position: relative;
+  border: 2px solid var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.property-card--featured::before {
+  content: 'Featured';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.property-card--featured .property-card__price {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+```
+
+#### Property Card - Gallery Layout
+```css
+.property-card--gallery {
+  overflow: hidden;
+}
+
+.property-card--gallery .property-card__image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.property-card--gallery .property-card__image-nav {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background: hsl(0 0% 0% / 0.7);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+}
+
+.property-card--gallery .property-card__amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.property-card--gallery .amenity-badge {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.6875rem;
+}
+```
+
+### Filter and Search Patterns
+
+Advanced filtering and search components for property discovery:
+
+#### Advanced Search Bar
+```css
+.search-bar--advanced {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.search-bar__field-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.search-bar__field {
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  min-width: 120px;
+}
+
+.search-bar__field:focus {
+  outline: none;
+}
+
+.search-bar__separator {
+  width: 1px;
+  height: 2rem;
+  background: var(--border);
+}
+
+.search-bar__filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+```
+
+#### Filter Chips
+```css
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.filter-chip:hover {
+  opacity: 0.9;
+}
+
+.filter-chip__remove {
+  width: 0.875rem;
+  height: 0.875rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-chip__remove:hover {
+  background: hsl(0 0% 100% / 0.2);
+}
+```
+
+#### Property Filters Panel
+```css
+.filters-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-group {
+  margin-bottom: 1.5rem;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+}
+
+.filter-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-range__input {
+  flex: 1;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+}
+
+.filter-range__separator {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+```
+
+### Map Integration Components
+
+Components for integrating map functionality:
+
+#### Map Container
+```css
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--muted);
+}
+
+.map-container--fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  z-index: 50;
+  border-radius: 0;
+}
+
+.map-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.map-control {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.map-control:hover {
+  box-shadow: var(--shadow-md);
+}
+```
+
+#### Map Property Marker
+```css
+.map-marker {
+  position: relative;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.map-marker:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.map-marker::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--primary);
+}
+
+.map-marker--featured {
+  background: var(--warning);
+  color: var(--warning-foreground);
+}
+
+.map-marker--featured::after {
+  border-top-color: var(--warning);
+}
+```
+
+### Property Comparison Layouts
+
+Side-by-side comparison components for properties:
+
+#### Comparison Table
+```css
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-table th {
+  background: var(--muted);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+
+.comparison-table td {
+  font-size: 0.875rem;
+  vertical-align: top;
+}
+
+.comparison-table .property-column {
+  width: 25%;
+  text-align: center;
+}
+
+.comparison-table .feature-column {
+  width: 25%;
+  font-weight: 500;
+}
+
+.comparison-highlight {
+  background: var(--success-bg);
+  color: var(--success);
+  font-weight: 600;
+}
+
+.comparison-unavailable {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+```
+
+#### Comparison Cards Layout
+```css
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  position: relative;
+}
+
+.comparison-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all var(--duration-base) var(--ease-out);
+  position: relative;
+}
+
+.comparison-card--selected {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.comparison-card__header {
+  background: var(--muted);
+  padding: 1rem;
+  text-align: center;
+}
+
+.comparison-card__price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.comparison-card__address {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.comparison-features {
+  padding: 1rem;
+}
+
+.comparison-feature {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-feature:last-child {
+  border-bottom: none;
+}
+
+.comparison-feature__label {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.comparison-feature__value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+```
+
+### Agent/Broker Profile Cards
+
+Professional profiles for real estate professionals:
+
+#### Agent Profile Card
+```css
+.agent-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-base) var(--ease-out);
+}
+
+.agent-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.agent-card__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.agent-avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agent-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.agent-info h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.agent-info .agent-title {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.agent-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+}
+
+.agent-stat {
+  text-align: center;
+}
+
+.agent-stat__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+}
+
+.agent-stat__label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.agent-contact {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.contact-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.contact-btn:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+```
+
+#### Agent Profile - Compact Layout
+```css
+.agent-card--compact {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.agent-card--compact .agent-avatar {
+  width: 3rem;
+  height: 3rem;
+  min-width: 3rem;
+}
+
+.agent-card--compact .agent-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-card--compact .agent-info h3 {
+  font-size: 1rem;
+  margin-bottom: 0.125rem;
+}
+
+.agent-card--compact .agent-stats {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.agent-card--compact .agent-stat {
+  text-align: left;
+}
+
+.agent-card--compact .agent-stat__value {
+  font-size: 1rem;
+}
+```
+
+### Real Estate Specific Icons & Badges
+
+Industry-specific visual indicators:
+
+#### Property Type Badges
+```css
+.property-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.property-type-badge--house { background: var(--primary); color: var(--primary-foreground); }
+.property-type-badge--apartment { background: var(--warning); color: var(--warning-foreground); }
+.property-type-badge--commercial { background: var(--destructive); color: var(--destructive-foreground); }
+.property-type-badge--land { background: var(--success); color: var(--success-foreground); }
+```
+
+#### Status Indicators
+```css
+.listing-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.listing-status--active { color: var(--success); }
+.listing-status--pending { color: var(--warning); }
+.listing-status--sold { color: var(--primary); }
+.listing-status--expired { color: var(--error); }
+
+.listing-status::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+```
+
+### Usage Guidelines for Real Estate Patterns
+
+#### Do's
+- Use property cards consistently across list and detail views
+- Implement progressive disclosure in comparison tables
+- Provide clear visual hierarchy in agent profiles
+- Use status indicators consistently across the platform
+- Include relevant property metadata (square footage, lot size, year built)
+- Optimize map components for mobile interaction
+- Use filter chips to show active search criteria
+
+#### Don'ts
+- Don't overload property cards with too much information
+- Don't use inconsistent property status terminology
+- Don't hide important property details behind interactions
+- Don't use generic avatars without fallback initials
+- Don't make comparison tables too wide for mobile viewing
+- Don't use map markers that are too small to interact with
+- Don't forget to include property images or fallback placeholders
+
 ## Icon System
 
 ### Lucide Icons Integration

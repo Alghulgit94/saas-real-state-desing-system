@@ -1,0 +1,175 @@
+<div class="sidebar__header">
+    <div class="sidebar__logo">
+        <h2 style="color: var(--sidebar-primary); font-weight: 700; font-size: 1.25rem; margin: 0;">
+            <i data-lucide="home" class="icon icon--lg" style="margin-right: 0.5rem;"></i>
+            RealEstate SaaS
+        </h2>
+    </div>
+    <button class="sidebar__toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <i data-lucide="menu" class="icon icon--md"></i>
+    </button>
+</div>
+
+<nav class="sidebar__nav">
+    <ul class="nav-list">
+        <li class="nav-item">
+            <a href="#dashboard" class="nav-link" data-route="dashboard">
+                <i data-lucide="layout-dashboard" class="nav-link__icon"></i>
+                Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#properties" class="nav-link" data-route="properties">
+                <i data-lucide="building" class="nav-link__icon"></i>
+                Properties
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#clients" class="nav-link" data-route="clients">
+                <i data-lucide="users" class="nav-link__icon"></i>
+                Clients
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#agents" class="nav-link" data-route="agents">
+                <i data-lucide="user-check" class="nav-link__icon"></i>
+                Agents
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#analytics" class="nav-link" data-route="analytics">
+                <i data-lucide="bar-chart-3" class="nav-link__icon"></i>
+                Analytics
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#reports" class="nav-link" data-route="reports">
+                <i data-lucide="file-text" class="nav-link__icon"></i>
+                Reports
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#settings" class="nav-link" data-route="settings">
+                <i data-lucide="settings" class="nav-link__icon"></i>
+                Settings
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="sidebar__footer">
+    <div class="user-profile">
+        <div class="user-avatar">
+            <i data-lucide="user" class="icon icon--lg"></i>
+        </div>
+        <div class="user-info">
+            <div class="user-name">John Doe</div>
+            <div class="user-role">Admin</div>
+        </div>
+        <div class="dropdown">
+            <button class="dropdown__trigger" aria-label="User menu">
+                <i data-lucide="more-vertical" class="icon icon--sm"></i>
+            </button>
+            <div class="dropdown__menu">
+                <a href="#profile" class="dropdown__item">
+                    <i data-lucide="user" class="icon icon--sm"></i>
+                    Profile
+                </a>
+                <a href="#preferences" class="dropdown__item">
+                    <i data-lucide="settings" class="icon icon--sm"></i>
+                    Preferences
+                </a>
+                <div class="dropdown__separator"></div>
+                <a href="#logout" class="dropdown__item">
+                    <i data-lucide="log-out" class="icon icon--sm"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Sidebar Component Styles */
+.sidebar__header {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid var(--sidebar-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar__toggle {
+    background: none;
+    border: none;
+    color: var(--sidebar-foreground);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    transition: background-color 0.2s ease;
+    display: none;
+}
+
+.sidebar__toggle:hover {
+    background-color: var(--sidebar-accent);
+}
+
+.sidebar__nav {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.sidebar__footer {
+    padding: 1rem;
+    border-top: 1px solid var(--sidebar-border);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background-color: var(--sidebar-accent);
+    border-radius: var(--radius);
+    position: relative;
+}
+
+.user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--sidebar-primary);
+    color: var(--sidebar-primary-foreground);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--sidebar-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: var(--sidebar-accent-foreground);
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .sidebar__toggle {
+        display: block;
+    }
+}
+</style>
