@@ -17,6 +17,24 @@
             box-sizing: border-box;
         }
 
+        /* Animation System CSS Custom Properties */
+        :root {
+            /* Duration Scale */
+            --duration-instant: 0ms;
+            --duration-fast: 150ms;
+            --duration-base: 250ms;
+            --duration-slow: 350ms;
+            --duration-slower: 500ms;
+            
+            /* Easing Functions */
+            --ease-linear: linear;
+            --ease-in: cubic-bezier(0.4, 0, 1, 1);
+            --ease-out: cubic-bezier(0, 0, 0.2, 1);
+            --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --ease-back: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+
         body {
             font-family: var(--font-sans);
             background-color: var(--background);
@@ -95,7 +113,7 @@
         .icon--lg { width: 1.25rem; height: 1.25rem; }
         .icon--xl { width: 1.5rem; height: 1.5rem; }
 
-        /* Button Component */
+        /* Button Component with Animation System */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -107,14 +125,25 @@
             border: 1px solid transparent;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.15s ease;
+            transition: all var(--duration-fast) var(--ease-out);
             padding: 0.5rem 1rem;
             min-height: 2.5rem;
+            transform: translateY(0);
         }
 
         .btn:focus-visible {
             outline: none;
             box-shadow: 0 0 0 2px var(--ring);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            transition-duration: var(--duration-instant);
         }
 
         .btn--primary {
@@ -180,7 +209,7 @@
             min-height: 3rem;
         }
 
-        /* Card Component */
+        /* Card Component with Animation System */
         .card {
             background-color: var(--card);
             color: var(--card-foreground);
@@ -188,6 +217,13 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
             overflow: hidden;
+            transition: all var(--duration-base) var(--ease-out);
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .card__header {
@@ -217,14 +253,16 @@
 
         /* Input Component */
         .input {
-            flex: 1;
+            width: 100%;
             border: 1px solid var(--input);
             background-color: transparent;
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
             border-radius: var(--radius);
             color: var(--foreground);
-            transition: all 0.15s ease;
+            transition: all var(--duration-fast) var(--ease-out);
+            min-height: 2.5rem;
+            box-sizing: border-box;
         }
 
         .input:focus {
@@ -252,7 +290,7 @@
         /* Custom Select Component */
         .select {
             position: relative;
-            display: inline-block;
+            display: block;
             width: 100%;
         }
 
@@ -268,7 +306,9 @@
             background-color: transparent;
             color: var(--foreground);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all var(--duration-fast) var(--ease-out);
+            min-height: 2.5rem;
+            box-sizing: border-box;
         }
 
         .select__trigger:focus {
@@ -576,7 +616,24 @@
             color: var(--sidebar-foreground);
             text-decoration: none;
             font-size: 0.875rem;
-            transition: all 0.15s ease;
+            transition: all var(--duration-fast) var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar__nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left var(--duration-base) var(--ease-out);
+        }
+
+        .sidebar__nav-link:hover::before {
+            left: 100%;
         }
 
         .sidebar__nav-link:hover {
@@ -659,6 +716,201 @@
 
         .component-grid--properties {
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        /* Animation System Showcase */
+        .animation-demo {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        /* Spinner Components */
+        .spinner {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid var(--muted);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        .spinner--sm { width: 1rem; height: 1rem; }
+        .spinner--lg { width: 2rem; height: 2rem; }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Skeleton Components */
+        .skeleton {
+            background: linear-gradient(90deg, var(--muted) 25%, var(--accent) 50%, var(--muted) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-shimmer 1.5s ease-in-out infinite;
+            border-radius: var(--radius);
+        }
+
+        .skeleton--text {
+            height: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton--card {
+            height: 8rem;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes skeleton-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Property Card Loading State */
+        .property-card--loading .property-card__image {
+            background: var(--muted);
+            animation: skeleton-shimmer 1.5s ease-in-out infinite;
+        }
+
+        .property-card--loading .property-card__title {
+            width: 70%;
+            height: 1.2rem;
+            background: var(--muted);
+            border-radius: var(--radius-sm);
+            animation: skeleton-shimmer 1.5s ease-in-out infinite;
+        }
+
+        /* Status Badge Animation */
+        .status-badge {
+            transition: all var(--duration-base) var(--ease-spring);
+            transform: scale(1);
+        }
+
+        .status-badge--updating {
+            transform: scale(1.1);
+            animation: pulse var(--duration-base) ease-in-out 2;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Price Change Animation */
+        .price-change {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .price-change::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary) 25%, transparent);
+            opacity: 0.3;
+            transition: left var(--duration-slow) var(--ease-out);
+        }
+
+        .price-change--highlight::after {
+            left: 100%;
+        }
+
+        /* Staggered Animation Demo */
+        .property-grid-item {
+            animation: fadeInUp var(--duration-base) var(--ease-out) forwards;
+            opacity: 0;
+            transform: translateY(1rem);
+        }
+
+        .property-grid-item:nth-child(1) { animation-delay: 0ms; }
+        .property-grid-item:nth-child(2) { animation-delay: 100ms; }
+        .property-grid-item:nth-child(3) { animation-delay: 200ms; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Focus Ring Animation */
+        .focus-ring {
+            position: relative;
+            outline: none;
+        }
+
+        .focus-ring::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border: 2px solid var(--ring);
+            border-radius: calc(var(--radius) + 2px);
+            opacity: 0;
+            transition: opacity var(--duration-fast) var(--ease-out);
+            pointer-events: none;
+        }
+
+        .focus-ring:focus-visible::after {
+            opacity: 1;
+        }
+
+        /* Modal Animation Demo */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: hsl(0 0% 0% / 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--duration-base) var(--ease-out);
+        }
+
+        .modal-overlay--open {
+            background-color: hsl(0 0% 0% / 0.5);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.95) translateY(-1rem);
+            opacity: 0;
+            transition: all var(--duration-base) var(--ease-back);
+        }
+
+        .modal-content--open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            .skeleton {
+                animation: none;
+                background: var(--muted);
+            }
         }
     </style>
 </head>
@@ -1223,6 +1475,121 @@
             </div>
         </section>
 
+        <!-- Animation & Motion System -->
+        <section class="demo-section">
+            <h2 class="text-2xl mb-6">Animation & Motion System</h2>
+            
+            <!-- Transition Timings & Easing -->
+            <h3 class="text-xl mb-4">Transition Timings & Easing</h3>
+            <div class="animation-demo mb-6">
+                <p class="text-sm text-muted mb-4">All animations use consistent timing and easing functions from our design system:</p>
+                <div class="flex gap-4 flex-wrap">
+                    <div class="text-xs">
+                        <strong>Fast:</strong> 150ms<br>
+                        <strong>Base:</strong> 250ms<br>
+                        <strong>Slow:</strong> 350ms
+                    </div>
+                    <div class="text-xs">
+                        <strong>Ease Out:</strong> cubic-bezier(0, 0, 0.2, 1)<br>
+                        <strong>Spring:</strong> cubic-bezier(0.68, -0.55, 0.265, 1.55)<br>
+                        <strong>Back:</strong> cubic-bezier(0.68, -0.6, 0.32, 1.6)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Animations -->
+            <h3 class="text-xl mb-4">Loading Animations</h3>
+            <div class="animation-demo mb-6">
+                <div class="flex gap-6 items-center mb-4">
+                    <div>
+                        <h4 class="text-sm mb-2">Spinners</h4>
+                        <div class="flex gap-4 items-center">
+                            <div class="spinner spinner--sm"></div>
+                            <div class="spinner"></div>
+                            <div class="spinner spinner--lg"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-sm mb-2">Skeleton Screens</h4>
+                        <div>
+                            <div class="skeleton skeleton--text" style="width: 80%;"></div>
+                            <div class="skeleton skeleton--text" style="width: 60%;"></div>
+                            <div class="skeleton skeleton--text" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Card Loading State -->
+            <h3 class="text-xl mb-4">Property Card Loading State</h3>
+            <div class="animation-demo mb-6">
+                <div class="grid grid-2 gap-4">
+                    <div class="property-card property-card--loading">
+                        <div class="property-card__image"></div>
+                        <div class="property-card__content">
+                            <div class="skeleton skeleton--text" style="width: 70%; height: 1.5rem; margin-bottom: 0.5rem;"></div>
+                            <div class="skeleton skeleton--text" style="width: 90%; height: 1rem; margin-bottom: 0.5rem;"></div>
+                            <div class="skeleton skeleton--text" style="width: 60%; height: 0.875rem;"></div>
+                        </div>
+                    </div>
+                    <div class="property-card">
+                        <div class="property-card__image">
+                            <i data-lucide="camera" class="icon icon--xl" style="color: var(--muted-foreground);"></i>
+                        </div>
+                        <div class="property-card__content">
+                            <div class="property-card__price">$450,000</div>
+                            <div class="property-card__title">Loaded Property</div>
+                            <div class="property-card__location">
+                                <i data-lucide="map-pin" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                                123 Oak Street, Downtown
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Micro-interactions -->
+            <h3 class="text-xl mb-4">Micro-interactions</h3>
+            <div class="animation-demo mb-6">
+                <div class="flex gap-4 flex-wrap items-center">
+                    <button class="btn btn--primary" onclick="triggerStatusUpdate(this)">
+                        <i data-lucide="refresh-cw" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                        Update Status
+                    </button>
+                    <span class="badge badge--primary status-badge" id="statusBadge">
+                        <i data-lucide="tag" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                        For Sale
+                    </span>
+                    <div class="property-card__price price-change" onclick="triggerPriceHighlight(this)">$450,000</div>
+                    <button class="btn btn--outline focus-ring" tabindex="0">
+                        <i data-lucide="focus" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                        Focus Ring Demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Staggered Animations -->
+            <h3 class="text-xl mb-4">Staggered Property Grid Animation</h3>
+            <div class="animation-demo mb-6">
+                <button class="btn btn--secondary" onclick="triggerStaggeredAnimation()" id="staggerBtn">
+                    <i data-lucide="play" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Trigger Animation
+                </button>
+                <div class="grid grid-3 gap-4 mt-4" id="propertyGrid">
+                    <!-- Grid items will be dynamically added -->
+                </div>
+            </div>
+
+            <!-- Modal Animation Demo -->
+            <h3 class="text-xl mb-4">Modal Animations</h3>
+            <div class="animation-demo mb-6">
+                <button class="btn btn--primary" onclick="openModal()">
+                    <i data-lucide="external-link" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Open Modal
+                </button>
+            </div>
+        </section>
+
         <!-- Interactive Components -->
         <section class="demo-section">
             <h2 class="text-2xl mb-6">Interactive Components</h2>
@@ -1353,7 +1720,144 @@
         </section>
     </div>
 
+    <!-- Modal for Animation Demo -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <h3 class="text-xl mb-4">
+                <i data-lucide="check-circle" class="icon icon--sm" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                Animation Demo Modal
+            </h3>
+            <p class="text-muted mb-6">This modal showcases smooth entrance and exit animations using our design system's easing functions.</p>
+            <div class="flex gap-2 justify-end">
+                <button class="btn btn--outline" onclick="closeModal()">
+                    <i data-lucide="x" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Close
+                </button>
+                <button class="btn btn--primary" onclick="closeModal()">
+                    <i data-lucide="check" class="icon icon--sm" style="margin-right: 0.5rem;"></i>
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Animation System Demo Functions
+        function triggerStatusUpdate(button) {
+            const statusBadge = document.getElementById('statusBadge');
+            const icon = button.querySelector('i');
+            
+            // Add updating class for pulse animation
+            statusBadge.classList.add('status-badge--updating');
+            
+            // Rotate the refresh icon
+            icon.style.transform = 'rotate(360deg)';
+            icon.style.transition = 'transform var(--duration-base) var(--ease-out)';
+            
+            // Reset after animation
+            setTimeout(() => {
+                statusBadge.classList.remove('status-badge--updating');
+                icon.style.transform = 'rotate(0deg)';
+            }, 500);
+        }
+
+        function triggerPriceHighlight(element) {
+            // Add highlight class for shimmer effect
+            element.classList.add('price-change--highlight');
+            
+            // Reset after animation
+            setTimeout(() => {
+                element.classList.remove('price-change--highlight');
+            }, 350);
+        }
+
+        function triggerStaggeredAnimation() {
+            const grid = document.getElementById('propertyGrid');
+            const btn = document.getElementById('staggerBtn');
+            
+            // Clear existing items
+            grid.innerHTML = '';
+            
+            // Disable button temporarily
+            btn.disabled = true;
+            btn.querySelector('i').setAttribute('data-lucide', 'loader');
+            lucide.createIcons();
+            
+            // Create property items with staggered animation
+            const properties = [
+                { price: '$325,000', title: 'Modern Condo', location: 'Downtown' },
+                { price: '$450,000', title: 'Family Home', location: 'Suburbs' },
+                { price: '$675,000', title: 'Luxury Villa', location: 'Uptown' }
+            ];
+            
+            properties.forEach((property, index) => {
+                setTimeout(() => {
+                    const item = document.createElement('div');
+                    item.className = 'property-card property-grid-item';
+                    item.innerHTML = `
+                        <div class="property-card__image">
+                            <i data-lucide="camera" class="icon icon--xl" style="color: var(--muted-foreground);"></i>
+                        </div>
+                        <div class="property-card__content">
+                            <div class="property-card__price">${property.price}</div>
+                            <div class="property-card__title">${property.title}</div>
+                            <div class="property-card__location">
+                                <i data-lucide="map-pin" class="icon icon--sm" style="margin-right: 0.25rem;"></i>
+                                ${property.location}
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(item);
+                    lucide.createIcons();
+                }, index * 50);
+            });
+            
+            // Re-enable button
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.querySelector('i').setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+            }, 1000);
+        }
+
+        function openModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            
+            overlay.classList.add('modal-overlay--open');
+            
+            // Delay content animation slightly for better effect
+            setTimeout(() => {
+                content.classList.add('modal-content--open');
+            }, 50);
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            
+            content.classList.remove('modal-content--open');
+            
+            // Wait for content animation to finish before hiding overlay
+            setTimeout(() => {
+                overlay.classList.remove('modal-overlay--open');
+            }, 250);
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
         // Theme toggle functionality
         function toggleTheme() {
             const html = document.documentElement;

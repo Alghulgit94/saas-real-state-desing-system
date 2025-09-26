@@ -191,6 +191,367 @@ Seven-level elevation system using consistent shadow tokens:
 - **xl**: `0px 4px 8px -1px hsl(0 0% 0% / 0.10), 0px 8px 10px -2px hsl(0 0% 0% / 0.10)` - Modals, dropdowns
 - **2xl**: `0px 4px 8px -1px hsl(0 0% 0% / 0.25)` - Maximum elevation
 
+## Animation & Motion System
+
+Professional animation system emphasizing performance, accessibility, and user experience. All animations respect user preferences and provide meaningful feedback.
+
+### Transition Timings & Easing
+
+CSS custom properties for consistent motion across all components:
+
+```css
+/* Duration Scale */
+--duration-instant: 0ms;          /* Immediate feedback */
+--duration-fast: 150ms;           /* Quick interactions */
+--duration-base: 250ms;           /* Standard transitions */
+--duration-slow: 350ms;           /* Complex animations */
+--duration-slower: 500ms;         /* Page transitions */
+
+/* Easing Functions */
+--ease-linear: linear;
+--ease-in: cubic-bezier(0.4, 0, 1, 1);           /* Accelerating */
+--ease-out: cubic-bezier(0, 0, 0.2, 1);          /* Decelerating */
+--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);     /* Smooth curve */
+--ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Bouncy effect */
+--ease-back: cubic-bezier(0.68, -0.6, 0.32, 1.6); /* Overshoot effect */
+```
+
+### Hover States & Micro-interactions
+
+Consistent hover effects for all interactive elements:
+
+#### Buttons
+```css
+.btn {
+  transition: all var(--duration-fast) var(--ease-out);
+  transform: translateY(0);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+  transform: translateY(0);
+  transition-duration: var(--duration-instant);
+}
+```
+
+#### Cards
+```css
+.card, .property-card {
+  transition: all var(--duration-base) var(--ease-out);
+  transform: translateY(0);
+}
+
+.card:hover, .property-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+```
+
+#### Links & Navigation
+```css
+.sidebar__nav-link {
+  transition: all var(--duration-fast) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar__nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left var(--duration-base) var(--ease-out);
+}
+
+.sidebar__nav-link:hover::before {
+  left: 100%;
+}
+```
+
+### Loading Animations & Skeleton Screens
+
+Professional loading states for data-heavy real estate applications:
+
+#### Spinner Components
+```css
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--muted);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinner--sm { width: 1rem; height: 1rem; }
+.spinner--lg { width: 2rem; height: 2rem; }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+```
+
+#### Skeleton Screens
+```css
+.skeleton {
+  background: linear-gradient(90deg, var(--muted) 25%, var(--accent) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+
+.skeleton--text {
+  height: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton--card {
+  height: 12rem;
+  margin-bottom: 1rem;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+```
+
+#### Property Card Loading State
+```css
+.property-card--loading .property-card__image {
+  background: var(--muted);
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.property-card--loading .property-card__title {
+  width: 70%;
+  height: 1.2rem;
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+```
+
+### Page Transitions & State Changes
+
+Smooth transitions for SPA navigation and state updates:
+
+#### Fade Transitions
+```css
+.fade-enter {
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all var(--duration-base) var(--ease-out);
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  transition: all var(--duration-fast) var(--ease-in);
+}
+```
+
+#### Slide Transitions
+```css
+.slide-left-enter {
+  transform: translateX(100%);
+}
+
+.slide-left-enter-active {
+  transform: translateX(0);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.slide-left-exit-active {
+  transform: translateX(-100%);
+  transition: transform var(--duration-base) var(--ease-in);
+}
+```
+
+#### Modal & Overlay Animations
+```css
+.modal-overlay {
+  background-color: hsl(0 0% 0% / 0);
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+.modal-overlay--open {
+  background-color: hsl(0 0% 0% / 0.5);
+}
+
+.modal-content {
+  transform: scale(0.95) translateY(-1rem);
+  opacity: 0;
+  transition: all var(--duration-base) var(--ease-back);
+}
+
+.modal-content--open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+```
+
+### Focus & Accessibility Animations
+
+Enhanced focus indicators with smooth animations:
+
+```css
+.focus-ring {
+  position: relative;
+  outline: none;
+}
+
+.focus-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--ring);
+  border-radius: calc(var(--radius) + 2px);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.focus-ring:focus-visible::after {
+  opacity: 1;
+}
+```
+
+### Real Estate Specific Animations
+
+Contextual animations for property and client management:
+
+#### Property Status Changes
+```css
+.status-badge {
+  transition: all var(--duration-base) var(--ease-spring);
+  transform: scale(1);
+}
+
+.status-badge--updating {
+  transform: scale(1.1);
+  animation: pulse var(--duration-base) ease-in-out 2;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1.1); }
+  50% { transform: scale(1.05); }
+}
+```
+
+#### Price Updates
+```css
+.price-change {
+  position: relative;
+  overflow: hidden;
+}
+
+.price-change::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--primary) 25%, transparent);
+  transition: left var(--duration-slow) var(--ease-out);
+}
+
+.price-change--highlight::after {
+  left: 100%;
+}
+```
+
+#### Property Grid Animations
+```css
+.property-grid-item {
+  animation: fadeInUp var(--duration-base) var(--ease-out) forwards;
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+.property-grid-item:nth-child(1) { animation-delay: 0ms; }
+.property-grid-item:nth-child(2) { animation-delay: 50ms; }
+.property-grid-item:nth-child(3) { animation-delay: 100ms; }
+.property-grid-item:nth-child(4) { animation-delay: 150ms; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+### Performance & Accessibility Considerations
+
+#### Reduced Motion Support
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .skeleton {
+    animation: none;
+    background: var(--muted);
+  }
+}
+```
+
+#### GPU Acceleration
+```css
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Remove will-change after animation */
+.animation-complete {
+  will-change: auto;
+}
+```
+
+### Usage Guidelines
+
+#### Do's
+- Use consistent timing and easing across related interactions
+- Respect user motion preferences with `prefers-reduced-motion`
+- Apply GPU acceleration (`will-change`) sparingly and remove after animations
+- Provide loading states for operations taking longer than 200ms
+- Use spring easing for delightful micro-interactions
+- Chain animations with appropriate delays for staggered effects
+
+#### Don'ts
+- Don't animate layout properties (width, height) - prefer transforms
+- Don't use animations longer than 500ms for UI feedback
+- Don't ignore accessibility preferences
+- Don't animate too many elements simultaneously
+- Don't use overly bouncy effects in professional contexts
+- Don't forget to provide non-animated alternatives for critical feedback
+
 ## Icon System
 
 ### Lucide Icons Integration
