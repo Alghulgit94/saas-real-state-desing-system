@@ -1,63 +1,21 @@
 <div class="sidebar__header">
     <div class="sidebar__logo">
-        <h2 style="color: var(--sidebar-primary); font-weight: 700; font-size: 1.25rem; margin: 0;">
-            <i data-lucide="home" class="icon icon--lg" style="margin-right: 0.5rem;"></i>
-            RealEstate SaaS
+        <h2 style="color: var(--sidebar-primary); font-weight: 700; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="home" class="icon icon--lg"></i>
+            <span class="sidebar__logo-text">RealEstate SaaS</span>
         </h2>
     </div>
     <button class="sidebar__toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
-        <i data-lucide="menu" class="icon icon--md"></i>
+        <i data-lucide="chevrons-left" class="icon icon--md"></i>
     </button>
 </div>
 
 <nav class="sidebar__nav">
     <ul class="nav-list">
         <li class="nav-item">
-            <a href="#dashboard" class="nav-link" data-route="dashboard">
+            <a href="#/dashboard" class="nav-link" data-route="dashboard">
                 <i data-lucide="layout-dashboard" class="nav-link__icon"></i>
-                Dashboard
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#properties" class="nav-link" data-route="properties">
-                <i data-lucide="building" class="nav-link__icon"></i>
-                Properties
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#reservation" class="nav-link" data-route="reservation">
-                <i data-lucide="file-text" class="nav-link__icon"></i>
-                Reservation
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#clients" class="nav-link" data-route="clients">
-                <i data-lucide="users" class="nav-link__icon"></i>
-                Clients
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#agents" class="nav-link" data-route="agents">
-                <i data-lucide="user-check" class="nav-link__icon"></i>
-                Agents
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#analytics" class="nav-link" data-route="analytics">
-                <i data-lucide="bar-chart-3" class="nav-link__icon"></i>
-                Analytics
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#reports" class="nav-link" data-route="reports">
-                <i data-lucide="file-text" class="nav-link__icon"></i>
-                Reports
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#settings" class="nav-link" data-route="settings">
-                <i data-lucide="settings" class="nav-link__icon"></i>
-                Settings
+                <span class="nav-link__text">Dashboard</span>
             </a>
         </li>
     </ul>
@@ -112,12 +70,18 @@
     cursor: pointer;
     padding: 0.5rem;
     border-radius: var(--radius);
-    transition: background-color 0.2s ease;
-    display: none;
+    transition: background-color 0.2s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar__toggle:hover {
     background-color: var(--sidebar-accent);
+}
+
+.sidebar--collapsed .sidebar__toggle {
+    transform: rotate(180deg);
 }
 
 .sidebar__nav {

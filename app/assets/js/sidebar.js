@@ -274,7 +274,7 @@ class SidebarController {
 
     restoreState() {
         if (!this.isMobile) {
-            const wasCollapsed = Storage.getItem('sidebar_collapsed', false);
+            const wasCollapsed = Storage.getItem('sidebar_collapsed', true);
             if (wasCollapsed) {
                 this.isCollapsed = true;
                 this.sidebar.classList.add('sidebar--collapsed');
@@ -349,42 +349,6 @@ class SidebarController {
                 icon: 'layout-dashboard',
                 label: 'Dashboard',
                 href: '/dashboard'
-            },
-            {
-                route: 'properties',
-                icon: 'building',
-                label: 'Properties',
-                href: '/properties'
-            },
-            {
-                route: 'clients',
-                icon: 'users',
-                label: 'Clients',
-                href: '/clients'
-            },
-            {
-                route: 'agents',
-                icon: 'user-check',
-                label: 'Agents',
-                href: '/agents'
-            },
-            {
-                route: 'analytics',
-                icon: 'bar-chart-3',
-                label: 'Analytics',
-                href: '/analytics'
-            },
-            {
-                route: 'reports',
-                icon: 'file-text',
-                label: 'Reports',
-                href: '/reports'
-            },
-            {
-                route: 'settings',
-                icon: 'settings',
-                label: 'Settings',
-                href: '/settings'
             }
         ];
     }

@@ -1,498 +1,748 @@
-/**
- * Dashboard Page Controller for Real Estate SaaS
- * Handles dashboard functionality, stats, charts, and recent activities
- */
-
 class DashboardController {
     constructor() {
+        this.reservations = [];
+        this.filteredReservations = [];
+        this.filters = {
+            name: '',
+            priceMin: '',
+            priceMax: '',
+            dateFrom: '',
+            dateTo: '',
+            status: ''
+        };
+        this.pagination = {
+            currentPage: 1,
+            itemsPerPage: 20
+        };
         this.stats = null;
-        this.chartInstances = {};
-        this.refreshInterval = null;
+        this.previousStats = null;
     }
 
     async load(container, data = {}) {
         try {
-            await this.loadStats();
+            Helpers.toggleLoading(true);
+            await this.loadReservations();
+            this.calculateStats();
+            this.applyFilters();
             this.render(container);
             this.setupEventListeners();
-            this.startAutoRefresh();
         } catch (error) {
             console.error('Error loading dashboard:', error);
             this.renderError(container);
+        } finally {
+            Helpers.toggleLoading(false);
         }
     }
 
-    async loadStats() {
+    async loadReservations() {
         try {
-            // Mock API call - replace with actual API
-            this.stats = {
-                totalProperties: 245,
-                activeListings: 189,
-                totalClients: 156,
-                monthlyRevenue: 125000,
-                recentActivity: [
-                    {
-                        id: 1,
-                        type: 'property_added',
-                        title: 'New property listed',
-                        description: '123 Oak Street has been added to listings',
-                        time: '5 minutes ago',
-                        icon: 'plus-circle'
-                    },
-                    {
-                        id: 2,
-                        type: 'client_inquiry',
-                        title: 'Client inquiry received',
-                        description: 'John Smith is interested in 456 Pine Avenue',
-                        time: '15 minutes ago',
-                        icon: 'message-circle'
-                    },
-                    {
-                        id: 3,
-                        type: 'property_sold',
-                        title: 'Property sold',
-                        description: '789 Maple Drive has been sold for $450,000',
-                        time: '2 hours ago',
-                        icon: 'check-circle'
-                    },
-                    {
-                        id: 4,
-                        type: 'meeting_scheduled',
-                        title: 'Meeting scheduled',
-                        description: 'Client meeting set for tomorrow at 2:00 PM',
-                        time: '4 hours ago',
-                        icon: 'calendar'
-                    }
-                ],
-                chartData: {
-                    sales: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        data: [45000, 52000, 48000, 61000, 55000, 67000]
-                    },
-                    properties: {
-                        available: 189,
-                        sold: 34,
-                        pending: 22
-                    }
-                }
-            };
+            const supabase = window.SupabaseClient;
+
+            if (!supabase || !supabase.isReady()) {
+                throw new Error('Supabase client not initialized');
+            }
+
+            const { data, error } = await supabase.getClient()
+                .from('reservations')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching reservations:', error);
+                throw error;
+            }
+
+            this.reservations = data || [];
+            console.log('Loaded reservations:', this.reservations.length);
         } catch (error) {
-            console.error('Error fetching dashboard stats:', error);
+            console.error('Error loading reservations:', error);
+            this.reservations = [];
             throw error;
         }
     }
 
+    calculateStats() {
+        const total = this.reservations.length;
+
+        const totalIncome = this.reservations.reduce((sum, r) => {
+            const price = r.lot_details?.precio_usd || 0;
+            return sum + price;
+        }, 0);
+
+        const pending = this.reservations.filter(r => r.status === 'pending').length;
+
+        const confirmed = this.reservations.filter(r => r.status === 'confirmed').length;
+        const conversionRate = total > 0 ? (confirmed / total) * 100 : 0;
+
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const recentReservations = this.reservations.filter(r =>
+            new Date(r.created_at) >= thirtyDaysAgo
+        );
+
+        this.stats = {
+            totalReservations: total,
+            totalIncome: totalIncome,
+            pendingReservations: pending,
+            conversionRate: conversionRate,
+            recentCount: recentReservations.length
+        };
+
+        const previousThirtyDays = this.reservations.filter(r => {
+            const date = new Date(r.created_at);
+            const sixtyDaysAgo = new Date();
+            sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+            return date >= sixtyDaysAgo && date < thirtyDaysAgo;
+        });
+
+        this.previousStats = {
+            totalReservations: previousThirtyDays.length
+        };
+    }
+
+    calculateChange() {
+        if (this.previousStats.totalReservations === 0) {
+            return { value: this.stats.recentCount > 0 ? 100 : 0, isPositive: true };
+        }
+        const change = ((this.stats.recentCount - this.previousStats.totalReservations) / this.previousStats.totalReservations) * 100;
+        return {
+            value: Math.abs(change),
+            isPositive: change >= 0
+        };
+    }
+
+    applyFilters() {
+        let filtered = [...this.reservations];
+
+        if (this.filters.name.trim()) {
+            const searchTerm = this.filters.name.toLowerCase().trim();
+            filtered = filtered.filter(r => {
+                const fullName = `${r.first_name} ${r.last_name}`.toLowerCase();
+                return fullName.includes(searchTerm);
+            });
+        }
+
+        if (this.filters.priceMin) {
+            const min = parseFloat(this.filters.priceMin);
+            filtered = filtered.filter(r => {
+                const price = r.lot_details?.precio_usd || 0;
+                return price >= min;
+            });
+        }
+
+        if (this.filters.priceMax) {
+            const max = parseFloat(this.filters.priceMax);
+            filtered = filtered.filter(r => {
+                const price = r.lot_details?.precio_usd || 0;
+                return price <= max;
+            });
+        }
+
+        if (this.filters.dateFrom) {
+            const fromDate = new Date(this.filters.dateFrom);
+            filtered = filtered.filter(r => {
+                const resDate = new Date(r.reservation_date);
+                return resDate >= fromDate;
+            });
+        }
+
+        if (this.filters.dateTo) {
+            const toDate = new Date(this.filters.dateTo);
+            toDate.setHours(23, 59, 59, 999);
+            filtered = filtered.filter(r => {
+                const resDate = new Date(r.reservation_date);
+                return resDate <= toDate;
+            });
+        }
+
+        if (this.filters.status) {
+            filtered = filtered.filter(r => r.status === this.filters.status);
+        }
+
+        this.filteredReservations = filtered;
+        this.pagination.currentPage = 1;
+    }
+
+    getActiveFilterChips() {
+        const chips = [];
+
+        if (this.filters.name) {
+            chips.push({ key: 'name', label: `Name: ${this.filters.name}` });
+        }
+        if (this.filters.priceMin || this.filters.priceMax) {
+            const min = this.filters.priceMin ? `$${this.formatPrice(this.filters.priceMin)}` : 'Any';
+            const max = this.filters.priceMax ? `$${this.formatPrice(this.filters.priceMax)}` : 'Any';
+            chips.push({ key: 'price', label: `Price: ${min} - ${max}` });
+        }
+        if (this.filters.dateFrom || this.filters.dateTo) {
+            const from = this.filters.dateFrom ? this.formatDateShort(this.filters.dateFrom) : 'Any';
+            const to = this.filters.dateTo ? this.formatDateShort(this.filters.dateTo) : 'Any';
+            chips.push({ key: 'date', label: `Date: ${from} - ${to}` });
+        }
+        if (this.filters.status) {
+            chips.push({ key: 'status', label: `Status: ${this.capitalizeFirst(this.filters.status)}` });
+        }
+
+        return chips;
+    }
+
+    getPaginatedReservations() {
+        const start = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
+        const end = start + this.pagination.itemsPerPage;
+        return this.filteredReservations.slice(start, end);
+    }
+
+    getTotalPages() {
+        return Math.ceil(this.filteredReservations.length / this.pagination.itemsPerPage);
+    }
+
     render(container) {
+        const change = this.calculateChange();
+        const activeFilters = this.getActiveFilterChips();
+        const paginatedData = this.getPaginatedReservations();
+        const totalPages = this.getTotalPages();
+
         const html = `
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-description">Welcome back! Here's what's happening with your real estate business.</p>
+                    <h1 class="page-title">Reservation Dashboard</h1>
+                    <p class="page-description">Monitor and manage property reservations</p>
                 </div>
                 <div class="page-actions">
-                    <button class="btn btn--outline" id="test-reservation">
-                        <i data-lucide="file-text" class="icon icon--sm"></i>
-                        Test Reservation Form
-                    </button>
                     <button class="btn btn--outline" id="refresh-dashboard">
                         <i data-lucide="refresh-cw" class="icon icon--sm"></i>
                         Refresh
                     </button>
-                    <button class="btn btn--primary" id="quick-add-property">
-                        <i data-lucide="plus" class="icon icon--sm"></i>
-                        Add Property
-                    </button>
                 </div>
             </div>
 
-            <!-- Stats Cards -->
             <div class="dashboard-stats">
-                <div class="stat-card">
+                <div class="stat-card stat-card--dark">
                     <div class="stat-card__header">
-                        <span class="stat-card__title">Total Properties</span>
+                        <span class="stat-card__title">Total Reservations</span>
                         <div class="stat-card__icon">
-                            <i data-lucide="building" class="icon icon--md"></i>
+                            <i data-lucide="file-text" class="icon icon--md"></i>
                         </div>
                     </div>
-                    <div class="stat-card__value">${Helpers.formatNumber(this.stats.totalProperties)}</div>
-                    <div class="stat-card__change stat-card__change--positive">
-                        <i data-lucide="trending-up" class="icon icon--xs"></i>
-                        <span>+12% from last month</span>
+                    <div class="stat-card__value">${this.stats.totalReservations}</div>
+                    <div class="stat-card__change ${change.isPositive ? 'stat-card__change--positive' : 'stat-card__change--negative'}">
+                        <i data-lucide="${change.isPositive ? 'trending-up' : 'trending-down'}" class="icon icon--xs"></i>
+                        <span>${change.isPositive ? '+' : ''}${change.value.toFixed(1)}% from last month</span>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-card__header">
-                        <span class="stat-card__title">Active Listings</span>
-                        <div class="stat-card__icon">
-                            <i data-lucide="eye" class="icon icon--md"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card__value">${Helpers.formatNumber(this.stats.activeListings)}</div>
-                    <div class="stat-card__change stat-card__change--positive">
-                        <i data-lucide="trending-up" class="icon icon--xs"></i>
-                        <span>+8% from last month</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-card__header">
-                        <span class="stat-card__title">Total Clients</span>
-                        <div class="stat-card__icon">
-                            <i data-lucide="users" class="icon icon--md"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card__value">${Helpers.formatNumber(this.stats.totalClients)}</div>
-                    <div class="stat-card__change stat-card__change--positive">
-                        <i data-lucide="trending-up" class="icon icon--xs"></i>
-                        <span>+15% from last month</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-card__header">
-                        <span class="stat-card__title">Monthly Revenue</span>
+                        <span class="stat-card__title">Total Income</span>
                         <div class="stat-card__icon">
                             <i data-lucide="dollar-sign" class="icon icon--md"></i>
                         </div>
                     </div>
-                    <div class="stat-card__value">${Helpers.formatCurrency(this.stats.monthlyRevenue)}</div>
+                    <div class="stat-card__value">$${this.formatPrice(this.stats.totalIncome)}</div>
+                    <div class="stat-card__change stat-card__change--muted">
+                        <span>USD</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <span class="stat-card__title">Pending Reservations</span>
+                        <div class="stat-card__icon">
+                            <i data-lucide="clock" class="icon icon--md"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card__value">${this.stats.pendingReservations}</div>
+                    <div class="stat-card__change stat-card__change--muted">
+                        <span>${this.stats.totalReservations > 0 ? ((this.stats.pendingReservations / this.stats.totalReservations) * 100).toFixed(1) : 0}% of total</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card__header">
+                        <span class="stat-card__title">Conversion Rate</span>
+                        <div class="stat-card__icon">
+                            <i data-lucide="check-circle" class="icon icon--md"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card__value">${this.stats.conversionRate.toFixed(1)}%</div>
                     <div class="stat-card__change stat-card__change--positive">
-                        <i data-lucide="trending-up" class="icon icon--xs"></i>
-                        <span>+23% from last month</span>
+                        <i data-lucide="target" class="icon icon--xs"></i>
+                        <span>Conversion metric</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts Section -->
-            <div class="dashboard-charts">
-                <div class="chart-container">
-                    <h3 class="chart-title">Sales Performance</h3>
-                    <div class="chart-placeholder" id="sales-chart">
-                        <i data-lucide="bar-chart-3" class="icon" style="width: 3rem; height: 3rem; margin-bottom: 1rem;"></i>
-                        <p>Sales chart will be rendered here</p>
-                        <p style="font-size: 0.875rem; color: var(--muted-foreground);">Integration with Chart.js or similar charting library needed</p>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <h3 class="chart-title">Property Status</h3>
-                    <div class="property-status-chart">
-                        <div class="status-item">
-                            <div class="status-indicator" style="background-color: var(--primary);"></div>
-                            <div class="status-info">
-                                <span class="status-label">Available</span>
-                                <span class="status-value">${this.stats.chartData.properties.available}</span>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-indicator" style="background-color: #f59e0b;"></div>
-                            <div class="status-info">
-                                <span class="status-label">Pending</span>
-                                <span class="status-value">${this.stats.chartData.properties.pending}</span>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-indicator" style="background-color: #10b981;"></div>
-                            <div class="status-info">
-                                <span class="status-label">Sold</span>
-                                <span class="status-value">${this.stats.chartData.properties.sold}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activities -->
-            <div class="recent-activities">
-                <div class="card__header">
-                    <h3 class="card__title">Recent Activities</h3>
-                    <div class="card__actions">
-                        <button class="btn btn--ghost btn--sm">
-                            <i data-lucide="more-horizontal" class="icon icon--sm"></i>
+            <div class="filters-panel">
+                <div class="filters-panel__header">
+                    <h3 class="filters-panel__title">
+                        <i data-lucide="filter" class="icon icon--sm"></i>
+                        Filter Reservations
+                    </h3>
+                    ${activeFilters.length > 0 ? `
+                        <button class="btn btn--ghost btn--sm" id="clear-all-filters">
+                            <i data-lucide="x" class="icon icon--xs"></i>
+                            Clear All
                         </button>
+                    ` : ''}
+                </div>
+
+                <div class="filters-panel__controls">
+                    <div class="filter-group">
+                        <label class="filter-label">Name</label>
+                        <input
+                            type="text"
+                            class="input__field"
+                            id="filter-name"
+                            placeholder="Search by name..."
+                            value="${this.filters.name}"
+                        >
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Price Range (USD)</label>
+                        <div class="filter-range">
+                            <input
+                                type="number"
+                                class="input__field"
+                                id="filter-price-min"
+                                placeholder="Min"
+                                value="${this.filters.priceMin}"
+                            >
+                            <span class="filter-range__separator">to</span>
+                            <input
+                                type="number"
+                                class="input__field"
+                                id="filter-price-max"
+                                placeholder="Max"
+                                value="${this.filters.priceMax}"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-range">
+                            <input
+                                type="date"
+                                class="input__field"
+                                id="filter-date-from"
+                                value="${this.filters.dateFrom}"
+                            >
+                            <span class="filter-range__separator">to</span>
+                            <input
+                                type="date"
+                                class="input__field"
+                                id="filter-date-to"
+                                value="${this.filters.dateTo}"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select class="input__field" id="filter-status">
+                            <option value="">All statuses</option>
+                            <option value="pending" ${this.filters.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="confirmed" ${this.filters.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                            <option value="cancelled" ${this.filters.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
                     </div>
                 </div>
-                <div class="card__content">
-                    <ul class="activity-list">
-                        ${this.stats.recentActivity.map(activity => `
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i data-lucide="${activity.icon}" class="icon icon--sm"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <div class="activity-title">${Helpers.escapeHtml(activity.title)}</div>
-                                    <div class="activity-description">${Helpers.escapeHtml(activity.description)}</div>
-                                    <div class="activity-time">${activity.time}</div>
-                                </div>
-                            </li>
+
+                ${activeFilters.length > 0 ? `
+                    <div class="filter-chips">
+                        ${activeFilters.map(chip => `
+                            <div class="filter-chip" data-filter-key="${chip.key}">
+                                <span>${Helpers.escapeHtml(chip.label)}</span>
+                                <button class="filter-chip__remove" aria-label="Remove filter">
+                                    <i data-lucide="x" class="icon icon--xs"></i>
+                                </button>
+                            </div>
                         `).join('')}
-                    </ul>
-                </div>
-                <div class="card__footer">
-                    <button class="btn btn--outline btn--sm">
-                        View All Activities
-                    </button>
+                    </div>
+                ` : ''}
+
+                <div class="filters-panel__results">
+                    <span>Showing ${this.filteredReservations.length} of ${this.reservations.length} reservations</span>
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="quick-actions" style="margin-top: 2rem;">
-                <h3 style="margin-bottom: 1rem; color: var(--foreground);">Quick Actions</h3>
-                <div class="grid grid--cols-4 grid--gap-4">
-                    <button class="quick-action-card" data-action="add-property">
-                        <i data-lucide="plus-circle" class="icon icon--lg"></i>
-                        <span>Add Property</span>
-                    </button>
-                    <button class="quick-action-card" data-action="add-client">
-                        <i data-lucide="user-plus" class="icon icon--lg"></i>
-                        <span>Add Client</span>
-                    </button>
-                    <button class="quick-action-card" data-action="schedule-meeting">
-                        <i data-lucide="calendar-plus" class="icon icon--lg"></i>
-                        <span>Schedule Meeting</span>
-                    </button>
-                    <button class="quick-action-card" data-action="generate-report">
-                        <i data-lucide="file-text" class="icon icon--lg"></i>
-                        <span>Generate Report</span>
+            <div class="reservations-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Recent Reservations</h3>
+                    <button class="btn btn--ghost btn--sm">
+                        <i data-lucide="settings" class="icon icon--sm"></i>
                     </button>
                 </div>
+
+                ${this.filteredReservations.length > 0 ? `
+                    <div class="table-wrapper">
+                        <table class="reservations-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Lot</th>
+                                    <th>Price</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${paginatedData.map(reservation => this.renderReservationRow(reservation)).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    ${totalPages > 1 ? `
+                        <div class="table-pagination">
+                            <button
+                                class="btn btn--outline btn--sm"
+                                id="prev-page"
+                                ${this.pagination.currentPage === 1 ? 'disabled' : ''}
+                            >
+                                <i data-lucide="chevron-left" class="icon icon--sm"></i>
+                                Previous
+                            </button>
+
+                            <div class="pagination-pages">
+                                ${this.renderPaginationPages(totalPages)}
+                            </div>
+
+                            <button
+                                class="btn btn--outline btn--sm"
+                                id="next-page"
+                                ${this.pagination.currentPage === totalPages ? 'disabled' : ''}
+                            >
+                                Next
+                                <i data-lucide="chevron-right" class="icon icon--sm"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                ` : `
+                    <div class="empty-state">
+                        <i data-lucide="inbox" class="icon" style="width: 3rem; height: 3rem; margin-bottom: 1rem; color: var(--muted-foreground);"></i>
+                        <h3>No reservations found</h3>
+                        <p>Try adjusting your filters or check back later</p>
+                    </div>
+                `}
             </div>
         `;
 
         container.innerHTML = html;
-        this.addDashboardStyles();
+        lucide.createIcons();
     }
 
-    addDashboardStyles() {
-        if (document.getElementById('dashboard-styles')) return;
+    renderReservationRow(reservation) {
+        const lotName = reservation.lot_details?.nombre || 'N/A';
+        const lotPrice = reservation.lot_details?.precio_usd || 0;
+        const statusClass = this.getStatusClass(reservation.status);
 
-        const style = document.createElement('style');
-        style.id = 'dashboard-styles';
-        style.textContent = `
-            .property-status-chart {
-                padding: 1rem;
-            }
-            
-            .status-item {
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                padding: 0.75rem 0;
-            }
-            
-            .status-indicator {
-                width: 1rem;
-                height: 1rem;
-                border-radius: 50%;
-            }
-            
-            .status-info {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex: 1;
-            }
-            
-            .status-label {
-                font-size: 0.875rem;
-                color: var(--foreground);
-            }
-            
-            .status-value {
-                font-weight: 600;
-                color: var(--foreground);
-            }
-            
-            .quick-action-card {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 0.75rem;
-                padding: 1.5rem 1rem;
-                background: var(--card);
-                border: 1px solid var(--border);
-                border-radius: var(--radius);
-                cursor: pointer;
-                transition: all 0.2s ease;
-                color: var(--foreground);
-                text-decoration: none;
-            }
-            
-            .quick-action-card:hover {
-                transform: translateY(-2px);
-                box-shadow: var(--shadow-md);
-                border-color: var(--primary);
-            }
-            
-            .quick-action-card span {
-                font-size: 0.875rem;
-                font-weight: 500;
-                text-align: center;
-            }
-            
-            @media (max-width: 768px) {
-                .quick-actions .grid--cols-4 {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-            }
-            
-            @media (max-width: 480px) {
-                .quick-actions .grid--cols-4 {
-                    grid-template-columns: 1fr;
-                }
-            }
+        return `
+            <tr data-reservation-id="${reservation.id}">
+                <td class="table-cell-name">
+                    <div class="cell-content">
+                        <span class="cell-primary">${Helpers.escapeHtml(reservation.first_name)} ${Helpers.escapeHtml(reservation.last_name)}</span>
+                    </div>
+                </td>
+                <td>${Helpers.escapeHtml(reservation.email)}</td>
+                <td>${Helpers.escapeHtml(reservation.phone || 'N/A')}</td>
+                <td><span class="lot-badge">${Helpers.escapeHtml(lotName)}</span></td>
+                <td class="table-cell-price">$${this.formatPrice(lotPrice)} USD</td>
+                <td>${this.formatDate(reservation.reservation_date)}</td>
+                <td>
+                    <span class="status-badge ${statusClass}">
+                        ${this.capitalizeFirst(reservation.status || 'pending')}
+                    </span>
+                </td>
+                <td class="table-cell-actions">
+                    <button class="btn btn--ghost btn--sm" data-action="options" data-id="${reservation.id}">
+                        <i data-lucide="more-horizontal" class="icon icon--sm"></i>
+                    </button>
+                    <button class="btn btn--outline btn--sm" data-action="details" data-id="${reservation.id}">
+                        Details
+                    </button>
+                </td>
+            </tr>
         `;
-        document.head.appendChild(style);
+    }
+
+    renderPaginationPages(totalPages) {
+        const current = this.pagination.currentPage;
+        const pages = [];
+
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            if (current <= 4) {
+                pages.push(1, 2, 3, 4, 5, '...', totalPages);
+            } else if (current >= totalPages - 3) {
+                pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+            } else {
+                pages.push(1, '...', current - 1, current, current + 1, '...', totalPages);
+            }
+        }
+
+        return pages.map(page => {
+            if (page === '...') {
+                return '<span class="pagination-ellipsis">...</span>';
+            }
+            return `
+                <button
+                    class="pagination-page ${page === current ? 'active' : ''}"
+                    data-page="${page}"
+                >
+                    ${page}
+                </button>
+            `;
+        }).join('');
     }
 
     setupEventListeners() {
-        // Test reservation form button
-        const testReservationBtn = document.getElementById('test-reservation');
-        if (testReservationBtn) {
-            testReservationBtn.addEventListener('click', () => {
-                router.navigate('/reservation');
-            });
-        }
-
-        // Refresh button
         const refreshBtn = document.getElementById('refresh-dashboard');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', () => this.refresh());
         }
 
-        // Quick add property button
-        const quickAddBtn = document.getElementById('quick-add-property');
-        if (quickAddBtn) {
-            quickAddBtn.addEventListener('click', () => {
-                if (window.headerController) {
-                    window.headerController.openAddPropertyModal();
-                }
+        const nameInput = document.getElementById('filter-name');
+        if (nameInput) {
+            nameInput.addEventListener('input', Helpers.debounce((e) => {
+                this.filters.name = e.target.value;
+                this.applyFiltersAndRender();
+            }, 300));
+        }
+
+        const priceMinInput = document.getElementById('filter-price-min');
+        if (priceMinInput) {
+            priceMinInput.addEventListener('input', Helpers.debounce((e) => {
+                this.filters.priceMin = e.target.value;
+                this.applyFiltersAndRender();
+            }, 300));
+        }
+
+        const priceMaxInput = document.getElementById('filter-price-max');
+        if (priceMaxInput) {
+            priceMaxInput.addEventListener('input', Helpers.debounce((e) => {
+                this.filters.priceMax = e.target.value;
+                this.applyFiltersAndRender();
+            }, 300));
+        }
+
+        const dateFromInput = document.getElementById('filter-date-from');
+        if (dateFromInput) {
+            dateFromInput.addEventListener('change', (e) => {
+                this.filters.dateFrom = e.target.value;
+                this.applyFiltersAndRender();
             });
         }
 
-        // Quick action cards
-        const quickActionCards = document.querySelectorAll('[data-action]');
-        quickActionCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const action = card.dataset.action;
-                this.handleQuickAction(action);
+        const dateToInput = document.getElementById('filter-date-to');
+        if (dateToInput) {
+            dateToInput.addEventListener('change', (e) => {
+                this.filters.dateTo = e.target.value;
+                this.applyFiltersAndRender();
+            });
+        }
+
+        const statusSelect = document.getElementById('filter-status');
+        if (statusSelect) {
+            statusSelect.addEventListener('change', (e) => {
+                this.filters.status = e.target.value;
+                this.applyFiltersAndRender();
+            });
+        }
+
+        const clearAllBtn = document.getElementById('clear-all-filters');
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', () => this.clearAllFilters());
+        }
+
+        const filterChips = document.querySelectorAll('.filter-chip__remove');
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', (e) => {
+                const filterKey = e.currentTarget.closest('.filter-chip').dataset.filterKey;
+                this.removeFilter(filterKey);
             });
         });
 
-        // Activity items (could navigate to detailed view)
-        const activityItems = document.querySelectorAll('.activity-item');
-        activityItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // Navigate to detailed view of the activity
-                console.log('Activity clicked:', item);
+        const prevPageBtn = document.getElementById('prev-page');
+        if (prevPageBtn) {
+            prevPageBtn.addEventListener('click', () => this.changePage(this.pagination.currentPage - 1));
+        }
+
+        const nextPageBtn = document.getElementById('next-page');
+        if (nextPageBtn) {
+            nextPageBtn.addEventListener('click', () => this.changePage(this.pagination.currentPage + 1));
+        }
+
+        const pageButtons = document.querySelectorAll('.pagination-page');
+        pageButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const page = parseInt(e.currentTarget.dataset.page);
+                this.changePage(page);
+            });
+        });
+
+        const detailButtons = document.querySelectorAll('[data-action="details"]');
+        detailButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                this.showReservationDetails(id);
             });
         });
     }
 
-    handleQuickAction(action) {
-        switch (action) {
-            case 'add-property':
-                if (window.headerController) {
-                    window.headerController.openAddPropertyModal();
-                }
-                break;
-            case 'add-client':
-                router.navigate('/clients/new');
-                break;
-            case 'schedule-meeting':
-                this.openScheduleMeetingModal();
-                break;
-            case 'generate-report':
-                router.navigate('/reports');
-                break;
-            default:
-                console.log('Unknown action:', action);
+    applyFiltersAndRender() {
+        this.applyFilters();
+        const container = document.getElementById('page-content');
+        if (container) {
+            this.render(container);
+            this.setupEventListeners();
         }
     }
 
-    openScheduleMeetingModal() {
+    clearAllFilters() {
+        this.filters = {
+            name: '',
+            priceMin: '',
+            priceMax: '',
+            dateFrom: '',
+            dateTo: '',
+            status: ''
+        };
+        this.applyFiltersAndRender();
+    }
+
+    removeFilter(filterKey) {
+        switch (filterKey) {
+            case 'name':
+                this.filters.name = '';
+                break;
+            case 'price':
+                this.filters.priceMin = '';
+                this.filters.priceMax = '';
+                break;
+            case 'date':
+                this.filters.dateFrom = '';
+                this.filters.dateTo = '';
+                break;
+            case 'status':
+                this.filters.status = '';
+                break;
+        }
+        this.applyFiltersAndRender();
+    }
+
+    changePage(page) {
+        const totalPages = this.getTotalPages();
+        if (page < 1 || page > totalPages) return;
+
+        this.pagination.currentPage = page;
+        const container = document.getElementById('page-content');
+        if (container) {
+            this.render(container);
+            this.setupEventListeners();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    showReservationDetails(id) {
+        const reservation = this.reservations.find(r => r.id === id);
+        if (!reservation) return;
+
+        const lotDetails = reservation.lot_details || {};
         const modal = new Modal({
-            title: 'Schedule Meeting',
+            title: 'Reservation Details',
             content: `
-                <form id="schedule-meeting-form">
-                    <div class="form-group">
-                        <label class="form-label">Client</label>
-                        <select class="input__field" name="client" required>
-                            <option value="">Select client...</option>
-                            <option value="1">John Smith</option>
-                            <option value="2">Jane Doe</option>
-                            <option value="3">Mike Johnson</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Meeting Type</label>
-                        <select class="input__field" name="type" required>
-                            <option value="">Select type...</option>
-                            <option value="property_viewing">Property Viewing</option>
-                            <option value="consultation">Consultation</option>
-                            <option value="contract_signing">Contract Signing</option>
-                            <option value="follow_up">Follow Up</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Date</label>
-                            <input type="date" class="input__field" name="date" required>
+                <div class="reservation-details">
+                    <div class="detail-section">
+                        <h4 class="detail-section__title">Client Information</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Name:</span>
+                            <span class="detail-value">${Helpers.escapeHtml(reservation.first_name)} ${Helpers.escapeHtml(reservation.last_name)}</span>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Time</label>
-                            <input type="time" class="input__field" name="time" required>
+                        <div class="detail-row">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">${Helpers.escapeHtml(reservation.email)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">${Helpers.escapeHtml(reservation.phone || 'N/A')}</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea class="textarea" name="notes" placeholder="Meeting notes or agenda..." rows="3"></textarea>
+
+                    <div class="detail-section">
+                        <h4 class="detail-section__title">Lot Information</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Lot:</span>
+                            <span class="detail-value">${Helpers.escapeHtml(lotDetails.nombre || 'N/A')}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$${this.formatPrice(lotDetails.precio_usd || 0)} USD</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Area:</span>
+                            <span class="detail-value">${lotDetails.area_m2 ? `${lotDetails.area_m2} m²` : 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Dimensions:</span>
+                            <span class="detail-value">${Helpers.escapeHtml(lotDetails.lados || 'N/A')}</span>
+                        </div>
                     </div>
-                    <div class="flex" style="gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem;">
-                        <button type="button" class="btn btn--outline" onclick="this.closest('.modal-container').querySelector('.modal-close').click()">Cancel</button>
-                        <button type="submit" class="btn btn--primary">Schedule Meeting</button>
+
+                    <div class="detail-section">
+                        <h4 class="detail-section__title">Reservation Details</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="status-badge ${this.getStatusClass(reservation.status)}">
+                                ${this.capitalizeFirst(reservation.status || 'pending')}
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Reservation Date:</span>
+                            <span class="detail-value">${this.formatDate(reservation.reservation_date)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Created:</span>
+                            <span class="detail-value">${this.formatDate(reservation.created_at)}</span>
+                        </div>
+                        ${reservation.additional_message ? `
+                            <div class="detail-row">
+                                <span class="detail-label">Message:</span>
+                                <span class="detail-value">${Helpers.escapeHtml(reservation.additional_message)}</span>
+                            </div>
+                        ` : ''}
                     </div>
-                </form>
+
+                    <div class="modal-actions">
+                        <button class="btn btn--outline" onclick="this.closest('.modal-container').querySelector('.modal-close').click()">Close</button>
+                        <button class="btn btn--primary">Update Status</button>
+                    </div>
+                </div>
             `,
             size: 'medium'
         });
 
         modal.open();
-
-        // Handle form submission
-        const form = document.getElementById('schedule-meeting-form');
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                try {
-                    const formData = new FormData(form);
-                    const meetingData = Object.fromEntries(formData);
-                    
-                    console.log('Scheduling meeting:', meetingData);
-                    
-                    Toast.success('Meeting scheduled successfully!');
-                    modal.close();
-                    
-                    // Refresh dashboard to show new activity
-                    this.refresh();
-                } catch (error) {
-                    console.error('Error scheduling meeting:', error);
-                    Toast.error('Failed to schedule meeting. Please try again.');
-                }
-            });
-        }
     }
 
     async refresh() {
         try {
             Helpers.toggleLoading(true);
-            await this.loadStats();
-            
-            // Update stat values
-            this.updateStatCards();
-            
+            await this.loadReservations();
+            this.calculateStats();
+            this.applyFilters();
+            const container = document.getElementById('page-content');
+            if (container) {
+                this.render(container);
+                this.setupEventListeners();
+            }
             Toast.success('Dashboard refreshed');
         } catch (error) {
             console.error('Error refreshing dashboard:', error);
@@ -502,27 +752,44 @@ class DashboardController {
         }
     }
 
-    updateStatCards() {
-        const statCards = document.querySelectorAll('.stat-card__value');
-        if (statCards.length >= 4) {
-            statCards[0].textContent = Helpers.formatNumber(this.stats.totalProperties);
-            statCards[1].textContent = Helpers.formatNumber(this.stats.activeListings);
-            statCards[2].textContent = Helpers.formatNumber(this.stats.totalClients);
-            statCards[3].textContent = Helpers.formatCurrency(this.stats.monthlyRevenue);
-        }
+    formatPrice(amount) {
+        return amount.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
     }
 
-    startAutoRefresh() {
-        // Refresh every 5 minutes
-        this.refreshInterval = setInterval(() => {
-            this.refresh();
-        }, 5 * 60 * 1000);
+    formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
 
-    stopAutoRefresh() {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-            this.refreshInterval = null;
+    formatDateShort(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return `${day}/${month}`;
+    }
+
+    capitalizeFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    getStatusClass(status) {
+        switch (status) {
+            case 'pending':
+                return 'status-badge--pending';
+            case 'confirmed':
+                return 'status-badge--confirmed';
+            case 'cancelled':
+                return 'status-badge--cancelled';
+            default:
+                return 'status-badge--pending';
         }
     }
 
@@ -531,32 +798,20 @@ class DashboardController {
             <div class="alert alert--error">
                 <div class="alert__content">
                     <div class="alert__title">Error Loading Dashboard</div>
-                    <div class="alert__description">Failed to load dashboard data. Please try refreshing the page.</div>
+                    <div class="alert__description">Failed to load reservation data. Please check your Supabase connection and try again.</div>
                 </div>
             </div>
         `;
     }
 
     destroy() {
-        this.stopAutoRefresh();
-        
-        // Cleanup chart instances if using a charting library
-        Object.values(this.chartInstances).forEach(chart => {
-            if (chart && typeof chart.destroy === 'function') {
-                chart.destroy();
-            }
-        });
-        this.chartInstances = {};
     }
 }
 
-// Create and export dashboard controller
 const dashboardController = new DashboardController();
 
-// Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = dashboardController;
 }
 
-// Make available globally
 window.dashboardController = dashboardController;
