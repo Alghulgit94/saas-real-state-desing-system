@@ -1,0 +1,200 @@
+[
+    {
+        "id": "a1214402-66c7-4171-9ce8-e930b012bdb7",
+        "created_at": "2025-10-06T22:16:24.363478+00:00",
+        "first_name": "Omar",
+        "last_name": "Vera",
+        "email": "contacto@regexa.com",
+        "phone": "+595983945035",
+        "additional_message": null,
+        "lot_id": "729f27f2-d3af-43f0-97a6-f02d67f888e5",
+        "lot_details": {
+            "lados": "68.5 x 67.2 m",
+            "nombre": "Lote 1",
+            "area_m2": 4594,
+            "precio_usd": 52000,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-06T22:16:24.186+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "contacto@regexa.com"
+    },
+    {
+        "id": "b6626453-6048-419a-a48f-b0c4a38ff3ae",
+        "created_at": "2025-10-07T14:06:45.849685+00:00",
+        "first_name": "Omar",
+        "last_name": "Vera",
+        "email": "contacto@regexa.com",
+        "phone": "+595983945035",
+        "additional_message": null,
+        "lot_id": "7c59c2f8-1913-405b-aea2-6f41aaed6b16",
+        "lot_details": {
+            "lados": "78.5 x 90.6 m",
+            "nombre": "Lote 5",
+            "area_m2": 7111,
+            "precio_usd": 68500,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-07T14:06:45.23+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "contacto@regexa.com"
+    },
+    {
+        "id": "0b62ea00-9e98-49d7-83f5-2342686b3603",
+        "created_at": "2025-10-07T19:51:41.347921+00:00",
+        "first_name": "Omar",
+        "last_name": "Figueredo",
+        "email": "omargfv94@icloud.com",
+        "phone": "+5950983945035",
+        "additional_message": null,
+        "lot_id": "96210864-4fe9-4bbd-9d46-e7752d54ca51",
+        "lot_details": {
+            "lados": "88.2 x 101.7 m",
+            "nombre": "Lote 6",
+            "area_m2": 8973,
+            "precio_usd": 69800,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-07T19:51:40.925+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "omargfv94@icloud.com"
+    },
+    {
+        "id": "63517da9-f9ea-4f0f-af5d-27720c1415d2",
+        "created_at": "2025-10-07T20:01:38.032444+00:00",
+        "first_name": "Omar",
+        "last_name": "Vera",
+        "email": "ofigueredo@regexa.com",
+        "phone": "+595983945035",
+        "additional_message": null,
+        "lot_id": "329b1a4a-a19a-4603-9bea-5841bac4e076",
+        "lot_details": {
+            "lados": "65.2 x 64.5 m",
+            "nombre": "Lote 3",
+            "area_m2": 4202,
+            "precio_usd": 51200,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-07T20:01:37.4+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "ofigueredo@regexa.com"
+    },
+    {
+        "id": "ee491e1d-060f-44ab-8893-54925adaf46f",
+        "created_at": "2025-10-07T23:45:59.891427+00:00",
+        "first_name": "Omar",
+        "last_name": "Vera",
+        "email": "contacto@regexa.com",
+        "phone": "+595983945035",
+        "additional_message": null,
+        "lot_id": "803ab735-d9ec-47b4-b240-c0c20c4b983f",
+        "lot_details": {
+            "lados": "62.5 x 62.4 m",
+            "nombre": "Lote 8",
+            "area_m2": 3902,
+            "precio_usd": 45300,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-07T23:45:59.208+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "contacto@regexa.com"
+    },
+    {
+        "id": "5c5c6308-72b3-4eee-a66e-27327dbf1e67",
+        "created_at": "2025-10-08T00:02:48.771789+00:00",
+        "first_name": "Omar",
+        "last_name": "Figueredo",
+        "email": "omargfv94@icloud.com",
+        "phone": "+595986412345",
+        "additional_message": null,
+        "lot_id": "e5007ea1-5b99-4b3c-8ce4-6a0f49cfef49",
+        "lot_details": {
+            "lados": "65.4 x 65.3 m",
+            "nombre": "Lote 21",
+            "area_m2": 4270,
+            "precio_usd": 53200,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-08T00:02:48.643+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "omargfv94@icloud.com"
+    },
+    {
+        "id": "90f30c2a-e04c-4604-a55a-fcfcc2a9f9de",
+        "created_at": "2025-10-08T00:18:44.196113+00:00",
+        "first_name": "Omar",
+        "last_name": "Figueredo",
+        "email": "omargfv94@icloud.com",
+        "phone": "+595983123456",
+        "additional_message": null,
+        "lot_id": "7f30dac9-e0f4-4b12-a5e3-16774ae61531",
+        "lot_details": {
+            "lados": "62.7 x 62.5 m",
+            "nombre": "Lote 36",
+            "area_m2": 3922,
+            "precio_usd": 51500,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-08T00:18:44.135+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "omargfv94@icloud.com"
+    },
+    {
+        "id": "12e02549-a7ab-4bac-96fb-28d1a153a8d8",
+        "created_at": "2025-10-08T00:21:51.532993+00:00",
+        "first_name": "Omar",
+        "last_name": "Figueredo",
+        "email": "omargfv94@icloud.com",
+        "phone": "+59598123456",
+        "additional_message": null,
+        "lot_id": "51f4a242-40b3-437e-b665-b5baed982ecd",
+        "lot_details": {
+            "lados": "85.3 x 93.1 m",
+            "nombre": "Lote 11",
+            "area_m2": 7944,
+            "precio_usd": 65500,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-08T00:21:51.402+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "omargfv94@icloud.com"
+    },
+    {
+        "id": "3feae86e-f512-4e55-8aa0-c19a5bafd555",
+        "created_at": "2025-10-08T00:31:54.60601+00:00",
+        "first_name": "Omar",
+        "last_name": "Figueredo",
+        "email": "omargfv94@icloud.com",
+        "phone": "+595983123456",
+        "additional_message": null,
+        "lot_id": "50b38f96-20a4-47ba-b691-f314981bc8a2",
+        "lot_details": {
+            "lados": "76 x 76.5 m",
+            "nombre": "Lote 23",
+            "area_m2": 5818,
+            "precio_usd": 60200,
+            "loteamiento_id": "e4ffc88a-a057-4aed-8911-17ca6a3d33b5"
+        },
+        "reservation_date": "2025-10-08T00:31:54.539+00:00",
+        "status": "pending",
+        "confirmed_at": null,
+        "cancelled_at": null,
+        "email_lower": "omargfv94@icloud.com"
+    }
+]

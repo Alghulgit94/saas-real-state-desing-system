@@ -90,6 +90,10 @@ class DashboardController {
                     <p class="page-description">Welcome back! Here's what's happening with your real estate business.</p>
                 </div>
                 <div class="page-actions">
+                    <button class="btn btn--outline" id="test-reservation">
+                        <i data-lucide="file-text" class="icon icon--sm"></i>
+                        Test Reservation Form
+                    </button>
                     <button class="btn btn--outline" id="refresh-dashboard">
                         <i data-lucide="refresh-cw" class="icon icon--sm"></i>
                         Refresh
@@ -343,6 +347,14 @@ class DashboardController {
     }
 
     setupEventListeners() {
+        // Test reservation form button
+        const testReservationBtn = document.getElementById('test-reservation');
+        if (testReservationBtn) {
+            testReservationBtn.addEventListener('click', () => {
+                router.navigate('/reservation');
+            });
+        }
+
         // Refresh button
         const refreshBtn = document.getElementById('refresh-dashboard');
         if (refreshBtn) {

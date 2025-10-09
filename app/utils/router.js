@@ -22,7 +22,8 @@ class Router {
      * Initialize router
      */
     init() {
-        // Listen for browser navigation
+        // Listen for hash changes (better for static servers)
+        window.addEventListener('hashchange', this.handleRouteChange);
         window.addEventListener('popstate', this.handleRouteChange);
         
         // Listen for link clicks
@@ -67,15 +68,17 @@ class Router {
      * @param {boolean} replace - Whether to replace current history entry
      */
     navigate(path, state = {}, replace = false) {
-        const fullPath = this.basePath + path;
+        // Use hash-based navigation
+        const hashPath = '#' + path;
         
         if (replace) {
-            window.history.replaceState(state, '', fullPath);
+            window.history.replaceState(state, '', hashPath);
         } else {
-            window.history.pushState(state, '', fullPath);
+            window.history.pushState(state, '', hashPath);
         }
         
-        this.handleRouteChange();
+        // Update the hash and trigger route change
+        window.location.hash = path;
     }
 
     /**
@@ -112,7 +115,14 @@ class Router {
      * Handle route changes
      */
     async handleRouteChange() {
-        const path = window.location.pathname.replace(this.basePath, '') || '/';
+        // Use hash for routing (works with static servers)
+        let path = window.location.hash.replace('#', '') || '/';
+        
+        // If no hash, default to dashboard
+        if (!path || path === '/') {
+            path = '/dashboard';
+        }
+        
         const search = window.location.search;
         const hash = window.location.hash;
         const state = window.history.state || {};
@@ -185,9 +195,10 @@ class Router {
         }
         
         // Check if link has data-route attribute for SPA navigation
-        if (link.hasAttribute('data-route') || href.startsWith('/')) {
+        if (link.hasAttribute('data-route') || href.startsWith('/') || href.startsWith('#/')) {
             event.preventDefault();
-            this.navigate(href);
+            const path = href.startsWith('#/') ? href.substring(1) : href;
+            this.navigate(path);
         }
     }
 
@@ -274,7 +285,7 @@ class Router {
         
         // Try to redirect to dashboard or show 404 page
         if (context.path !== '/' && context.path !== '/dashboard') {
-            this.replace('/dashboard');
+            this.navigate('/dashboard', {}, true);
         } else {
             // Show 404 content
             const content = document.getElementById('page-content');
@@ -358,7 +369,7 @@ const router = new Router();
 // Set up default routes
 router
     .addRoute('/', async (context) => {
-        router.replace('/dashboard');
+        router.navigate('/dashboard', {}, true);
     })
     .addRoute('/dashboard', async (context) => {
         await loadPage('dashboard');
@@ -399,7 +410,7 @@ router
     .addRoute('/settings', async (context) => {
         await loadPage('settings');
         updateNavigation('settings');
-    });
+    })
 
 /**
  * Load page content
